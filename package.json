@@ -1,0 +1,41 @@
+{
+  "name": "ssi-sbt",
+  "version": "1.0.0",
+  "description": "Self Sovereign Identity Based Soulbound Tokens",
+  "main": "index.js",
+  "scripts": {
+    "lint": "npx eslint src/**/*.ts",
+    "prettier-write": "prettier --config .prettierrc 'src/**/*.ts' --write",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/meranti-web3/ssi-sbt.git"
+  },
+  "keywords": [
+    "SSI",
+    "self",
+    "sovereign",
+    "identity",
+    "SBT",
+    "soulbound",
+    "tokens",
+    "verifiable",
+    "credentials",
+    "NFT",
+    "ethereum"
+  ],
+  "author": "meranti.fr",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/meranti-web3/ssi-sbt/issues"
+  },
+  "homepage": "https://github.com/meranti-web3/ssi-sbt#readme",
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.45.1",
+    "@typescript-eslint/parser": "^5.45.1",
+    "eslint": "^8.29.0",
+    "prettier": "^2.8.0",
+    "typescript": "^4.9.3"
+  }
+}
