@@ -4,8 +4,12 @@
   "description": "Self Sovereign Identity Based Soulbound Tokens",
   "main": "index.js",
   "scripts": {
-    "lint": "npx eslint src/**/*.ts",
+    "clean": "rm -rf ./dist/*",
+    "lint": "eslint ./src/ --ext .ts --max-warnings 0",
     "prettier-write": "prettier --config .prettierrc 'src/**/*.ts' --write",
+    "build": "npx tsc",
+    "start": "node ./dist/index.js",
+    "dev": "concurrently \"npx tsc -w\" \"nodemon dist/index.js\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -32,10 +36,19 @@
   },
   "homepage": "https://github.com/meranti-web3/ssi-sbt#readme",
   "devDependencies": {
+    "@tsconfig/node18": "^1.0.1",
+    "@types/cors": "^2.8.13",
+    "@types/express": "^4.17.14",
     "@typescript-eslint/eslint-plugin": "^5.45.1",
     "@typescript-eslint/parser": "^5.45.1",
+    "concurrently": "^7.6.0",
     "eslint": "^8.29.0",
+    "nodemon": "^2.0.20",
     "prettier": "^2.8.0",
     "typescript": "^4.9.3"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.18.2"
   }
 }
