@@ -6,4 +6,6 @@ app.get("/", function (req, res) {
   res.send("Hello World");
 });
 
-app.listen(3002);
+const server = app.listen(process.env.PORT || 3000, function () {
+  console.log(`App listening on port ${server.address()?.port}`);
+});
