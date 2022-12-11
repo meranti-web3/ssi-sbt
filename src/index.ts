@@ -4,6 +4,7 @@ import express from "express";
 import bodyParser from "body-parser";
 import type { AddressInfo } from "net";
 import { soulboundTokens } from "./lib/soulboundTokens";
+import { provider } from "./lib/network";
 
 const app = express();
 
@@ -24,15 +25,18 @@ app.post<{
   let tx;
 
   if (hasToken > 0) {
-    res.status(400).send(`Client error, address ${transfer_to} already has this token.`);
+    res.status(400).send({
+      error: `Client error, address ${transfer_to} already has this token.`
+    });
+    return;
   } else {
     tx = await soulboundTokens.mint(transfer_to, ipfs_url);
   }
 
   res.status(200).send({
-    network: soulboundTokens.RPC_PROVIDER,
-    contractAddress: soulboundTokens.address,
-    txHash: tx.txHash
+    network: provider.network,
+    contract_address: soulboundTokens.address,
+    tx_hash: tx.hash
   });
 });
 
@@ -44,36 +48,40 @@ app.post<{ address_for: string }>("/burn", async function (req, res) {
   let tx;
 
   if (hasToken === 0) {
-    res.status(400).send(`Client error, address ${address_for} doesn't have this token.`);
+    res.status(400).send({
+      error: `Client error, address ${address_for} doesn't have this token.`
+    });
+    return;
   } else {
-    tx = await soulboundTokens.burn(address_for);
+    const tokenId = await soulboundTokens.tokenOfOwnerByIndex(address_for, 0);
+    tx = await soulboundTokens.burn(tokenId);
   }
 
   res.status(200).send({
-    network: soulboundTokens.RPC_PROVIDER,
-    contractAddress: soulboundTokens.address,
-    txHash: tx.txHash
+    network: provider.network,
+    contract_address: soulboundTokens.address,
+    tx_hash: tx.hash
   });
 });
 
 app.get<{
   address_for: string;
-}>("/hasSbt/:address_for", async function (req, res) {
+}>("/has/:address_for", async function (req, res) {
   const { address_for } = req.params;
 
   const balance = await soulboundTokens.balanceOf(address_for);
 
   res.status(200).send({
-    network: soulboundTokens.RPC_PROVIDER,
-    contractAddress: soulboundTokens.address,
+    network: provider.network,
+    contract_address: soulboundTokens.address,
     has_token: balance > 0
   });
 });
 
 app.get("/info", function (req, res) {
   res.send({
-    network: soulboundTokens.RPC_PROVIDER,
-    contractAddress: soulboundTokens.address
+    network: provider.network,
+    contract_address: soulboundTokens.address
   });
 });
 

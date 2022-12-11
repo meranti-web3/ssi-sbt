@@ -26,7 +26,7 @@ describe.only("SoulboundTokens", async () => {
     const { soulboundTokens, alice } = await loadFixture(deploySoulboundTokenFixture);
 
     // When
-    await soulboundTokens.safeMint(alice.getAddress(), "ipfs://test");
+    await soulboundTokens.mint(alice.getAddress(), "ipfs://test");
 
     // Then
     expect(await soulboundTokens.tokenURI(0)).to.equal("ipfs://test");
@@ -38,8 +38,8 @@ describe.only("SoulboundTokens", async () => {
 
     // When
     await Promise.all([
-      await soulboundTokens.safeMint(alice.getAddress(), "ipfs://test1"),
-      await soulboundTokens.safeMint(alice.getAddress(), "ipfs://test2")
+      await soulboundTokens.mint(alice.getAddress(), "ipfs://test1"),
+      await soulboundTokens.mint(alice.getAddress(), "ipfs://test2")
     ]);
 
     // Then
@@ -51,7 +51,7 @@ describe.only("SoulboundTokens", async () => {
     const { soulboundTokens, alice, bob } = await loadFixture(deploySoulboundTokenFixture);
 
     // When
-    await soulboundTokens.safeMint(alice.getAddress(), "ipfs://test");
+    await soulboundTokens.mint(alice.getAddress(), "ipfs://test");
 
     await expectRevert(
       soulboundTokens.connect(alice).transferFrom(alice.getAddress(), bob.getAddress(), 0),
@@ -64,7 +64,7 @@ describe.only("SoulboundTokens", async () => {
     const { soulboundTokens, alice } = await loadFixture(deploySoulboundTokenFixture);
 
     // When
-    await soulboundTokens.safeMint(alice.getAddress(), "ipfs://test");
+    await soulboundTokens.mint(alice.getAddress(), "ipfs://test");
 
     await expectRevert(soulboundTokens.connect(alice).burn(0), "Ownable: caller is not the owner");
   });
@@ -72,12 +72,27 @@ describe.only("SoulboundTokens", async () => {
   it("Should allow contract owner to burn an SBT", async () => {
     // Given
     const { soulboundTokens, alice } = await loadFixture(deploySoulboundTokenFixture);
-    await soulboundTokens.safeMint(alice.getAddress(), "ipfs://test");
+    await soulboundTokens.mint(alice.getAddress(), "ipfs://test");
 
     // When
     await soulboundTokens.burn(0);
 
     // Then
     expect(await soulboundTokens.balanceOf(alice.getAddress())).to.equal(0);
+  });
+
+  it("Should allow to retrieve a token by id", async () => {
+    // Given
+    const { soulboundTokens, alice, bob } = await loadFixture(deploySoulboundTokenFixture);
+
+    await soulboundTokens.mint(alice.getAddress(), "ipfs://test1");
+    await soulboundTokens.mint(bob.getAddress(), "ipfs://test2");
+    await soulboundTokens.mint(bob.getAddress(), "ipfs://test3");
+
+    // When
+    const tokenId = await soulboundTokens.tokenOfOwnerByIndex(bob.getAddress(), 1);
+
+    // Then
+    expect(await soulboundTokens.tokenURI(tokenId)).to.equal("ipfs://test3");
   });
 });
