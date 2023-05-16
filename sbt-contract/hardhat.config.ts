@@ -18,4 +18,11 @@ if (process.env.SEPOLIA_RPC_URL) {
   };
 }
 
+if (process.env.BSCTEST_RPC_URL) {
+  config.networks!.bsctest = {
+    url: process.env.BSCTEST_RPC_URL,
+    accounts: [process.env.WALLET_PRIVATE_KEY!]
+  };
+}
+
 export default config;

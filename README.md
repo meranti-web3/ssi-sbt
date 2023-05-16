@@ -11,10 +11,11 @@ This API is meant to be used by Issuers of Verifiable Credentials to generate th
 
 /!\ Those addresses may change, contracts are not updatable
 
-| blockchain  | address                                      |
-| ----------- | -------------------------------------------- |
-| sepolia     | `0x240863E65b2ace78eda93334be396FF220f14354` |
-| eth mainnet | not yet                                      |
+| blockchain  | address                                                                                                                        |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| sepolia     | `0x240863E65b2ace78eda93334be396FF220f14354`                                                                                   |
+| BSC Testnet | [`0x240863E65b2ace78eda93334be396FF220f14354`](https://testnet.bscscan.com/address/0x240863E65b2ace78eda93334be396FF220f14354) |
+| eth mainnet | not yet                                                                                                                        |
 
 ## Install
 
