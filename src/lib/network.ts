@@ -4,4 +4,4 @@ import { ENVVARS, getEnvVar } from "./envVars";
 
 export const provider = new JsonRpcProvider(getEnvVar(ENVVARS.RPC_PROVIDER));
 
-export const ownerWallet = new Wallet(getEnvVar(ENVVARS.WALLET_PK), provider);
+export const ownerWallet = new Wallet(getEnvVar(ENVVARS.WALLET_PRIVATE_KEY), provider);

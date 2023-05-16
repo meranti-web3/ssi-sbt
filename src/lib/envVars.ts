@@ -8,7 +8,7 @@ export function getEnvVar(name: keyof typeof ENVVARS): string {
 
 export const enum ENVVARS {
   RPC_PROVIDER = "RPC_PROVIDER",
-  WALLET_PK = "WALLET_PK",
+  WALLET_PRIVATE_KEY = "WALLET_PRIVATE_KEY",
   SBT_CONTRACT = "SBT_CONTRACT",
   API_TOKEN = "API_TOKEN"
 }
