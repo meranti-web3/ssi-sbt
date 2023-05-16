@@ -13,7 +13,7 @@ contract SoulboundTokens is ERC721, ERC721Enumerable, ERC721URIStorage, Pausable
 
     Counters.Counter private _tokenIdCounter;
 
-    constructor() ERC721("SoulboundTokens", "SBT") {}
+    constructor(string memory name, string memory symbol) ERC721(name, symbol) {}
 
     function pause() public onlyOwner {
         _pause();

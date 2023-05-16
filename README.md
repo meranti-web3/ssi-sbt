@@ -3,9 +3,9 @@
 Self Sovereign Identity based Soulbound Tokens (SBTs).
 
 SBTs are on-chain tokens holding personal information that can't be transfered (soulbound).
-This can be useful for a Smart Contract (ERC721) to verify a user's credentials.
+This can be useful for a Smart Contract (ERC721) to verify a user's credentials such as proof of age or identity.
 
-This API is meant to be used by issuers of verifiable credentials to generate the related SBT.
+This API is meant to be used by Issuers of Verifiable Credentials to generate the related SBTs.
 
 ## Install
 
@@ -20,7 +20,8 @@ To run the dev environment
 First, setup a `.env` file:
 
 ```
-RPC_PROVIDER=
+SEPOLIA_RPC_URL=
+ETH_RPC_URL=
 WALLET_PK=
 SBT_CONTRACT=
 API_TOKEN=
@@ -34,7 +35,7 @@ npm run dev
 
 ## Deploy
 
-This repository is automatically deploy when new changes are pushed to the `main` branch.
+This repository is automatically deployed when new changes are pushed to the `main` branch.
 
 If you need to deploy this yourself, simply `npm run build` then `npm run start` the `./dist/index.js` file on your node.js server. The main file is just an `express` server.
 

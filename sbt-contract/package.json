@@ -1,7 +1,7 @@
 {
   "name": "sbt-contract",
   "version": "1.0.0",
-  "description": "Smart Contracts for SBTs",
+  "description": "Smart Contracts for On Chain Verifiable Credentials",
   "main": "index.js",
   "private": true,
   "scripts": {
