@@ -1,14 +1,14 @@
-import { expectRevert } from "@openzeppelin/test-helpers";
 import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 import { expect } from "chai";
 import { ethers } from "hardhat";
 
-describe.only("SoulboundTokens", async () => {
+describe("Over 18 Proof SouldboundToken", async () => {
   async function deploySoulboundTokenFixture() {
     const SoulboundTokens = await ethers.getContractFactory("SoulboundTokens");
+
     const [owner, alice, bob, charly] = await ethers.getSigners();
 
-    const soulboundTokens = await SoulboundTokens.deploy();
+    const soulboundTokens = await SoulboundTokens.deploy("Talao Over 18 Proof", "TO18P");
 
     await soulboundTokens.deployed();
 
@@ -53,10 +53,9 @@ describe.only("SoulboundTokens", async () => {
     // When
     await soulboundTokens.mint(alice.getAddress(), "ipfs://test");
 
-    await expectRevert(
-      soulboundTokens.connect(alice).transferFrom(alice.getAddress(), bob.getAddress(), 0),
-      "ERC721: Cannot transfer SoulboundToken"
-    );
+    await expect(
+      soulboundTokens.connect(alice).transferFrom(alice.getAddress(), bob.getAddress(), 0)
+    ).to.be.revertedWith("ERC721: Cannot transfer SoulboundToken.");
   });
 
   it("Should not allow SBT owner to burn it", async () => {
@@ -66,7 +65,7 @@ describe.only("SoulboundTokens", async () => {
     // When
     await soulboundTokens.mint(alice.getAddress(), "ipfs://test");
 
-    await expectRevert(soulboundTokens.connect(alice).burn(0), "Ownable: caller is not the owner");
+    await expect(soulboundTokens.connect(alice).burn(0)).to.be.revertedWith("Ownable: caller is not the owner");
   });
 
   it("Should allow contract owner to burn an SBT", async () => {

@@ -2,7 +2,7 @@
   "name": "ssi-sbt",
   "version": "1.0.0",
   "description": "Self Sovereign Identity Based Soulbound Tokens",
-  "main": "index.js",
+  "private": true,
   "scripts": {
     "clean": "rm -rf ./dist/*",
     "lint": "eslint ./src/ --ext .ts --max-warnings 0",
@@ -17,6 +17,9 @@
     "url": "git+https://github.com/meranti-web3/ssi-sbt.git"
   },
   "keywords": [
+    "verifiable",
+    "credentials",
+    "VC",
     "SSI",
     "self",
     "sovereign",
