@@ -86,7 +86,9 @@ app.get("/info", function (req, res) {
 });
 
 app.get("/", function (req, res) {
-  res.send("you're probably lost here. If not, please contact olivier@meranti.fr");
+  res.send(
+    'Welcome! This API allows you to mint Soulbound Tokens to hold your Verifiable Credentials. See <a href="https://github.com/meranti-web3/ssi-sbt">https://github.com/meranti-web3/ssi-sbt</a> for more information'
+  );
 });
 
 const server = app.listen(process.env.PORT || 3000, function () {

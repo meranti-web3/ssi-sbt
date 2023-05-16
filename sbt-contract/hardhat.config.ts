@@ -1,6 +1,6 @@
 import * as dotenv from "dotenv";
 dotenv.config({
-  path: "../"
+  path: "../.env"
 });
 
 import { HardhatUserConfig } from "hardhat/config";
@@ -14,7 +14,7 @@ const config: HardhatUserConfig = {
 if (process.env.SEPOLIA_RPC_URL) {
   config.networks!.sepolia = {
     url: process.env.SEPOLIA_RPC_URL,
-    accounts: [process.env.WALLET_PK!]
+    accounts: [process.env.WALLET_PRIVATE_KEY!]
   };
 }
 

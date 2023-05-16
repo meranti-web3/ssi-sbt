@@ -7,6 +7,15 @@ This can be useful for a Smart Contract (ERC721) to verify a user's credentials 
 
 This API is meant to be used by Issuers of Verifiable Credentials to generate the related SBTs.
 
+## Contract addresses
+
+/!\ Those addresses may change, contracts are not updatable
+
+| blockchain  | address                                      |
+| ----------- | -------------------------------------------- |
+| sepolia     | `0x240863E65b2ace78eda93334be396FF220f14354` |
+| eth mainnet | not yet                                      |
+
 ## Install
 
 After cloning the repository:
