@@ -48,7 +48,7 @@ app.post<{ address_for: string }>("/burn", async function (req, res) {
   let tx;
 
   if (hasToken === 0) {
-    res.status(400).send({
+    res.status(430).send({
       error: `Client error, address ${address_for} doesn't have this token.`
     });
     return;

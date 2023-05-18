@@ -2,7 +2,7 @@ import { ethers } from "hardhat";
 
 async function main() {
   const SoulboundTokens = await ethers.getContractFactory("SoulboundTokens");
-  const soulboundTokens = await SoulboundTokens.deploy("Talao Test Over 18 Proof Token", "TTO18P");
+  const soulboundTokens = await SoulboundTokens.deploy("DeFi compliance proof", "DEFI");
 
   await soulboundTokens.deployed();
 
