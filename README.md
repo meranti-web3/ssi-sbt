@@ -13,9 +13,7 @@ This API is meant to be used by Issuers of Verifiable Credentials to generate th
 
 | blockchain  | address                                                                                                                        |
 | ----------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| sepolia     | `0x240863E65b2ace78eda93334be396FF220f14354`                                                                                   |
-| BSC Testnet | [`0x240863E65b2ace78eda93334be396FF220f14354`](https://testnet.bscscan.com/address/0x240863E65b2ace78eda93334be396FF220f14354) |
-| eth mainnet | not yet                                                                                                                        |
+| BSC Testnet | [`0xf648475141aB2387061cbACDD564e47e00f70265`](https://testnet.bscscan.com/address/0xf648475141aB2387061cbACDD564e47e00f70265) |
 
 ## Install
 
