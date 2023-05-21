@@ -25,7 +25,7 @@ app.post<{
   let tx;
 
   if (hasToken > 0) {
-    res.status(400).send({
+    res.status(430).send({
       error: `Client error, address ${transfer_to} already has this token.`
     });
     return;
