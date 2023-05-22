@@ -1,131 +1,161 @@
 {
-  "info": {
-    "_postman_id": "4f2eb723-e837-4e28-af44-e2a6f0f71e04",
-    "name": "Test SSI-SBT",
-    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
-  },
-  "item": [
-    {
-      "name": "mint",
-      "request": {
-        "method": "POST",
-        "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/x-www-form-urlencoded",
-            "type": "text"
-          },
-          {
-            "key": "Content-Type",
-            "value": "application/json",
-            "type": "text",
-            "disabled": true
-          }
-        ],
-        "body": {
-          "mode": "urlencoded",
-          "urlencoded": [
-            {
-              "key": "transfer_to",
-              "value": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
-              "type": "text"
-            },
-            {
-              "key": "ipfs_url",
-              "value": "tester",
-              "type": "text"
-            }
-          ],
-          "options": {
-            "raw": {
-              "language": "json"
-            }
-          }
-        },
-        "url": {
-          "raw": "{{API_URL}}/mint",
-          "host": ["{{API_URL}}"],
-          "path": ["mint"]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "info",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "{{API_URL}}/info",
-          "host": ["{{API_URL}}"],
-          "path": ["info"]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "burn",
-      "request": {
-        "method": "POST",
-        "header": [],
-        "body": {
-          "mode": "urlencoded",
-          "urlencoded": [
-            {
-              "key": "address_for",
-              "value": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
-              "type": "text"
-            }
-          ]
-        },
-        "url": {
-          "raw": "{{API_URL}}/burn",
-          "host": ["{{API_URL}}"],
-          "path": ["burn"]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "has token",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "{{API_URL}}/has/:address_for",
-          "host": ["{{API_URL}}"],
-          "path": ["has", ":address_for"],
-          "variable": [
-            {
-              "key": "address_for",
-              "value": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"
-            }
-          ]
-        }
-      },
-      "response": []
-    }
-  ],
-  "event": [
-    {
-      "listen": "prerequest",
-      "script": {
-        "type": "text/javascript",
-        "exec": [""]
-      }
-    },
-    {
-      "listen": "test",
-      "script": {
-        "type": "text/javascript",
-        "exec": [""]
-      }
-    }
-  ],
-  "variable": [
-    {
-      "key": "API_URL",
-      "value": "http://localhost:3000"
-    }
-  ]
+	"info": {
+		"_postman_id": "4f2eb723-e837-4e28-af44-e2a6f0f71e04",
+		"name": "Test SSI-SBT",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "1399595"
+	},
+	"item": [
+		{
+			"name": "mint",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "transfer_to",
+							"value": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+							"type": "text"
+						},
+						{
+							"key": "ipfs_url",
+							"value": "tester",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{API_URL}}/mint",
+					"host": [
+						"{{API_URL}}"
+					],
+					"path": [
+						"mint"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "info",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{API_URL}}/info",
+					"host": [
+						"{{API_URL}}"
+					],
+					"path": [
+						"info"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "burn",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "address_for",
+							"value": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{API_URL}}/burn",
+					"host": [
+						"{{API_URL}}"
+					],
+					"path": [
+						"burn"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "has token",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{API_URL}}/has/:address_for",
+					"host": [
+						"{{API_URL}}"
+					],
+					"path": [
+						"has",
+						":address_for"
+					],
+					"variable": [
+						{
+							"key": "address_for",
+							"value": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Token info",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "API_URL",
+			"value": "localhost:3000"
+		},
+		{
+			"key": "API_URL",
+			"value": "https://ssi-sbt.osc-fr1.scalingo.io",
+			"disabled": true
+		}
+	]
 }
