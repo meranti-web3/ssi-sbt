@@ -78,10 +78,12 @@ app.get<{
   });
 });
 
-app.get("/info", function (req, res) {
+app.get("/info", async function (req, res) {
   res.send({
     network: provider.network,
-    contract_address: soulboundTokens.address
+    contract_address: soulboundTokens.address,
+    name: await soulboundTokens.name(),
+    symbol: await soulboundTokens.symbol()
   });
 });
 
