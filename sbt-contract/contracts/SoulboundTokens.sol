@@ -13,6 +13,8 @@ contract SoulboundTokens is ERC721, ERC721Enumerable, ERC721URIStorage, Pausable
 
     Counters.Counter private _tokenIdCounter;
 
+    mapping(uint256 => uint256) private _creationTimestamps;
+
     constructor(string memory name, string memory symbol) ERC721(name, symbol) {}
 
     function pause() public onlyOwner {
@@ -28,6 +30,7 @@ contract SoulboundTokens is ERC721, ERC721Enumerable, ERC721URIStorage, Pausable
         _tokenIdCounter.increment();
         _mint(to, tokenId);
         _setTokenURI(tokenId, uri);
+        _setTokenTimestamp(tokenId, block.timestamp);
     }
 
     // Only contract owner can call burn
@@ -45,6 +48,15 @@ contract SoulboundTokens is ERC721, ERC721Enumerable, ERC721URIStorage, Pausable
         // and we allow burns from contract owner (to == 0x0)
         require(from == address(0) || to == address(0), "ERC721: Cannot transfer SoulboundToken.");
         super._beforeTokenTransfer(from, to, tokenId, batchSize);
+    }
+
+    function tokenTimestamp(uint256 tokenId) public view returns (uint256) {
+        require(_exists(tokenId), "ERC721: invalid token ID");
+        return _creationTimestamps[tokenId];
+    }
+
+    function _setTokenTimestamp(uint256 tokenId, uint256 timestamp) private {
+        _creationTimestamps[tokenId] = timestamp;
     }
 
     // The following functions are overrides required by Solidity.
