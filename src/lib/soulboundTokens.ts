@@ -8,7 +8,18 @@ export const soulboundTokens = new ethers.Contract(
   // copy/paste new interface after compilation when it changes
   [
     {
-      inputs: [],
+      inputs: [
+        {
+          internalType: "string",
+          name: "name",
+          type: "string"
+        },
+        {
+          internalType: "string",
+          name: "symbol",
+          type: "string"
+        }
+      ],
       stateMutability: "nonpayable",
       type: "constructor"
     },
@@ -449,6 +460,25 @@ export const soulboundTokens = new ethers.Contract(
         }
       ],
       name: "tokenOfOwnerByIndex",
+      outputs: [
+        {
+          internalType: "uint256",
+          name: "",
+          type: "uint256"
+        }
+      ],
+      stateMutability: "view",
+      type: "function"
+    },
+    {
+      inputs: [
+        {
+          internalType: "uint256",
+          name: "tokenId",
+          type: "uint256"
+        }
+      ],
+      name: "tokenTimestamp",
       outputs: [
         {
           internalType: "uint256",

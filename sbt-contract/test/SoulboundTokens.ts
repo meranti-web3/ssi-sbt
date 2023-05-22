@@ -1,8 +1,8 @@
-import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
+import { loadFixture, time } from "@nomicfoundation/hardhat-network-helpers";
 import { expect } from "chai";
 import { ethers } from "hardhat";
 
-describe("Over 18 Proof SouldboundToken", async () => {
+describe("SoulboundTokens", async () => {
   async function deploySoulboundTokenFixture() {
     const SoulboundTokens = await ethers.getContractFactory("SoulboundTokens");
 
@@ -21,6 +21,17 @@ describe("Over 18 Proof SouldboundToken", async () => {
     };
   }
 
+  it("Should set the token name", async () => {
+    // Given
+    const { soulboundTokens } = await loadFixture(deploySoulboundTokenFixture);
+
+    // When
+
+    // Then
+    expect(await soulboundTokens.name()).to.equal("Talao Over 18 Proof");
+    expect(await soulboundTokens.symbol()).to.equal("TO18P");
+  });
+
   it("Should create a new SBT", async () => {
     // Given
     const { soulboundTokens, alice } = await loadFixture(deploySoulboundTokenFixture);
@@ -30,6 +41,27 @@ describe("Over 18 Proof SouldboundToken", async () => {
 
     // Then
     expect(await soulboundTokens.tokenURI(0)).to.equal("ipfs://test");
+  });
+
+  it("Should record the token creation timestamp", async () => {
+    // Given
+    const { soulboundTokens, alice } = await loadFixture(deploySoulboundTokenFixture);
+
+    // When
+    await soulboundTokens.mint(alice.getAddress(), "ipfs://test");
+
+    // Then
+    expect(await soulboundTokens.tokenTimestamp(0)).to.equal(await time.latest());
+  });
+
+  it("Should return an error when reading a creation timestamp for a token that hasn't been minted", async () => {
+    // Given
+    const { soulboundTokens, alice } = await loadFixture(deploySoulboundTokenFixture);
+
+    // When
+
+    // Then
+    expect(soulboundTokens.tokenTimestamp(0)).to.be.revertedWith("ERC721: invalid token ID");
   });
 
   it("Should tell how many tokens a user has", async () => {
@@ -53,9 +85,9 @@ describe("Over 18 Proof SouldboundToken", async () => {
     // When
     await soulboundTokens.mint(alice.getAddress(), "ipfs://test");
 
-    await expect(
-      soulboundTokens.connect(alice).transferFrom(alice.getAddress(), bob.getAddress(), 0)
-    ).to.be.revertedWith("ERC721: Cannot transfer SoulboundToken.");
+    expect(soulboundTokens.connect(alice).transferFrom(alice.getAddress(), bob.getAddress(), 0)).to.be.revertedWith(
+      "ERC721: Cannot transfer SoulboundToken."
+    );
   });
 
   it("Should not allow SBT owner to burn it", async () => {
@@ -65,7 +97,7 @@ describe("Over 18 Proof SouldboundToken", async () => {
     // When
     await soulboundTokens.mint(alice.getAddress(), "ipfs://test");
 
-    await expect(soulboundTokens.connect(alice).burn(0)).to.be.revertedWith("Ownable: caller is not the owner");
+    expect(soulboundTokens.connect(alice).burn(0)).to.be.revertedWith("Ownable: caller is not the owner");
   });
 
   it("Should allow contract owner to burn an SBT", async () => {

@@ -85,6 +85,22 @@ app.get("/info", function (req, res) {
   });
 });
 
+app.get<{
+  token_id: number;
+}>("/id/:token_id", async function (req, res) {
+  const { token_id } = req.params;
+
+  const token_uri = await soulboundTokens.tokenURI(token_id);
+  const token_creation_timestamp = await soulboundTokens.tokenTimestamp(token_id);
+
+  res.status(200).send({
+    network: provider.network,
+    contract_address: soulboundTokens.address,
+    token_uri,
+    token_creation_timestamp: Number(token_creation_timestamp)
+  });
+});
+
 app.get("/", function (req, res) {
   res.send(
     'Welcome! This API allows you to mint Soulbound Tokens to hold your Verifiable Credentials. See <a href="https://github.com/meranti-web3/ssi-sbt">https://github.com/meranti-web3/ssi-sbt</a> for more information'
