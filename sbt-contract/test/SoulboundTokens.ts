@@ -85,31 +85,43 @@ describe("SoulboundTokens", async () => {
     // When
     await soulboundTokens.mint(alice.getAddress(), "ipfs://test");
 
-    expect(soulboundTokens.connect(alice).transferFrom(alice.getAddress(), bob.getAddress(), 0)).to.be.revertedWith(
-      "ERC721: Cannot transfer SoulboundToken."
-    );
+    await expect(
+      soulboundTokens.connect(alice).transferFrom(alice.getAddress(), bob.getAddress(), 0)
+    ).to.be.revertedWith("SoulboundToken: Cannot transfer SoulboundToken.");
   });
 
-  it("Should not allow SBT owner to burn it", async () => {
+  it("Should allow SBT owner to burn it", async () => {
     // Given
-    const { soulboundTokens, alice } = await loadFixture(deploySoulboundTokenFixture);
+    const { soulboundTokens, charly } = await loadFixture(deploySoulboundTokenFixture);
+    await soulboundTokens.mint(charly.getAddress(), "ipfs://test");
 
     // When
-    await soulboundTokens.mint(alice.getAddress(), "ipfs://test");
+    await soulboundTokens.connect(charly).burn(0);
 
-    expect(soulboundTokens.connect(alice).burn(0)).to.be.revertedWith("Ownable: caller is not the owner");
+    expect(await soulboundTokens.balanceOf(charly.getAddress())).to.equal(0);
   });
 
   it("Should allow contract owner to burn an SBT", async () => {
     // Given
-    const { soulboundTokens, alice } = await loadFixture(deploySoulboundTokenFixture);
-    await soulboundTokens.mint(alice.getAddress(), "ipfs://test");
+    const { soulboundTokens, bob } = await loadFixture(deploySoulboundTokenFixture);
+    await soulboundTokens.mint(bob.getAddress(), "ipfs://test");
 
     // When
     await soulboundTokens.burn(0);
 
     // Then
-    expect(await soulboundTokens.balanceOf(alice.getAddress())).to.equal(0);
+    expect(await soulboundTokens.balanceOf(bob.getAddress())).to.equal(0);
+  });
+
+  it("Should not allow non contract or token owner to burn", async () => {
+    // Given
+    const { soulboundTokens, alice, bob } = await loadFixture(deploySoulboundTokenFixture);
+    await soulboundTokens.mint(alice.getAddress(), "ipfs://test");
+
+    // Then
+    await expect(soulboundTokens.connect(bob).burn(0)).to.be.revertedWith(
+      "SoulboundToken: Only contract or token owner can burn."
+    );
   });
 
   it("Should allow to retrieve a token by id", async () => {

@@ -33,8 +33,11 @@ contract SoulboundTokens is ERC721, ERC721Enumerable, ERC721URIStorage, Pausable
         _setTokenTimestamp(tokenId, block.timestamp);
     }
 
-    // Only contract owner can call burn
-    function burn(uint256 tokenId) public virtual onlyOwner {
+    function burn(uint256 tokenId) public virtual {
+        require(
+            _msgSender() == ownerOf(tokenId) || _msgSender() == owner(),
+            "SoulboundToken: Only contract or token owner can burn."
+        );
         _burn(tokenId);
     }
 
@@ -46,7 +49,7 @@ contract SoulboundTokens is ERC721, ERC721Enumerable, ERC721URIStorage, Pausable
     ) internal override(ERC721, ERC721Enumerable) whenNotPaused {
         // We allow mints from contract owner (from == 0x0)
         // and we allow burns from contract owner (to == 0x0)
-        require(from == address(0) || to == address(0), "ERC721: Cannot transfer SoulboundToken.");
+        require(from == address(0) || to == address(0), "SoulboundToken: Cannot transfer SoulboundToken.");
         super._beforeTokenTransfer(from, to, tokenId, batchSize);
     }
 
