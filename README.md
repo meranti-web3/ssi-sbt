@@ -13,7 +13,7 @@ This API is meant to be used by Issuers of Verifiable Credentials to generate th
 
 | blockchain  | address                                                                                                                        |
 | ----------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| BSC Testnet | [`0xf648475141aB2387061cbACDD564e47e00f70265`](https://testnet.bscscan.com/address/0xf648475141aB2387061cbACDD564e47e00f70265) |
+| BSC Testnet | [`0xe2A73bc547761A0602359BE3513fE2ABb611674E`](https://testnet.bscscan.com/address/0xe2A73bc547761A0602359BE3513fE2ABb611674E) |
 
 ## Install
 
