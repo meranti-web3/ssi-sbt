@@ -151,11 +151,6 @@
 		{
 			"key": "API_URL",
 			"value": "localhost:3000"
-		},
-		{
-			"key": "API_URL",
-			"value": "https://ssi-sbt.osc-fr1.scalingo.io",
-			"disabled": true
 		}
 	]
 }
