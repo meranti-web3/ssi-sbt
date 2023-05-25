@@ -14,6 +14,7 @@ This API is meant to be used by Issuers of Verifiable Credentials to generate th
 | blockchain  | address                                                                                                                        |
 | ----------- | ------------------------------------------------------------------------------------------------------------------------------ |
 | BSC Testnet | [`0x1589257BBfA909B1b3D17148a7a3D27A37ee92ba`](https://testnet.bscscan.com/address/0x1589257BBfA909B1b3D17148a7a3D27A37ee92ba) |
+| BSC Mainnet | [`0x240863E65b2ace78eda93334be396FF220f14354`](https://bscscan.com/address/0x240863E65b2ace78eda93334be396FF220f14354)         |
 
 ## Install
 
@@ -28,11 +29,11 @@ To run the dev environment
 First, setup a `.env` file:
 
 ```
-SEPOLIA_RPC_URL=
-ETH_RPC_URL=
-WALLET_PK=
+RPC_PROVIDER=<bsc node you want to connect to>
+WALLET_PRIVATE_KEY=
+WALLET_ADDRESS=
 SBT_CONTRACT=
-API_TOKEN=
+API_KEY=testKey # the postman collection expects testKey by default
 ```
 
 If you don't have an SBT contract handy, you can deploy a new one to your preferred network by following the `./sbt-contract/README.md`
@@ -56,6 +57,7 @@ Example request:
 ```curl
 curl --location --request POST 'https://api-url.com/mint' \
 --header 'Content-Type: application/x-www-form-urlencoded' \
+--header 'X-API-KEY:testKey' \
 --data-urlencode 'transfer_to=0x123address' \
 --data-urlencode 'ipfs_url=ipfs://ipfs-url'
 ```
