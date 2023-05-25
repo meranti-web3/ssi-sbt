@@ -54,7 +54,7 @@
 			"name": "info",
 			"request": {
 				"method": "GET",
-				"header": [],
+        "header": [],
 				"url": {
 					"raw": "{{API_URL}}/info",
 					"host": [
@@ -127,6 +127,21 @@
 			"response": []
 		}
 	],
+	"auth": {
+		"type": "apikey",
+		"apikey": [
+			{
+				"key": "value",
+				"value": "testKey",
+				"type": "string"
+			},
+			{
+				"key": "key",
+				"value": "X-API-KEY",
+				"type": "string"
+			}
+		]
+	},
 	"event": [
 		{
 			"listen": "prerequest",

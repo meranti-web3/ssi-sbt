@@ -8,6 +8,8 @@ import type { AddressInfo } from "net";
 import { soulboundTokens } from "./lib/soulboundTokens";
 import { provider } from "./lib/network";
 import { asyncErrorHandling, ClientError, errorMiddleware } from "./lib/errors";
+import { requireAuth } from "./lib/requireAuth";
+import { ENVVARS, getEnvVar } from "./lib/envVars";
 
 const app = express();
 
@@ -16,6 +18,8 @@ app.use(
     extended: true
   })
 );
+
+app.all("*", requireAuth(getEnvVar(ENVVARS.API_KEY)));
 
 app.post<{
   transfer_to: string;
