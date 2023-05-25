@@ -25,4 +25,11 @@ if (process.env.BSCTEST_RPC_URL) {
   };
 }
 
+if (process.env.BSCMAIN_RPC_URL) {
+  config.networks!.bscmain = {
+    url: process.env.BSCMAIN_RPC_URL,
+    accounts: [process.env.WALLET_PRIVATE_KEY!]
+  };
+}
+
 export default config;
