@@ -19,7 +19,7 @@ app.use(
   })
 );
 
-app.all("*", requireAuth(getEnvVar(ENVVARS.API_KEY)));
+app.all(["/mint", "/burn"], requireAuth(getEnvVar(ENVVARS.API_KEY)));
 
 app.post<{
   transfer_to: string;
