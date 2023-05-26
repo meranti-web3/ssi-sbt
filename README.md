@@ -6,11 +6,12 @@ SBTs are on-chain tokens holding personal information that can't be transfered (
 They're implemented using ERC721 but restricting burns and tranfers.
 This can be useful for on-chain dApps, in the gaming or DeFi worlds for instance, to permission access without going off-chain.
 
-This API is meant to be used by Issuers of Verifiable Credentials to generate the related SBTs for users who need to get permissioned access to dApps.
+This app is meant to be used by Issuers of Verifiable Credentials to generate the related SBTs for users who need to get permissioned access to dApps.
+The minted SBTs can be consumed by dApps that need to verify a user's credentials.
 
 ## Contract addresses
 
-As a dApp (verifier), to verify if a user possesses a given token, you'll need to access the relevant Smart Contract and call the relevant methods.
+As a dApp (verifier), to verify if a user possesses a given token, you'll need to access the relevant Smart Contract.
 
 ### Altme DeFi Proof Of Compliance (DEFI)
 
@@ -36,7 +37,7 @@ The main differences are:
 - transfers are blocked.
 - we record the token's creation date so we can check if it has expired.
 
-### Verify if a user does own a given token
+### Verify that a user does own a given token
 
 ```solidity
 require(soulboundToken.balanceOf(address) > 0, "address doesn't have this token");
@@ -52,7 +53,7 @@ soulboundToken.burn(token_id);
 
 ### Check expiry on-chain
 
-As a verifier, you may check that a token is still valid by retrieving its timestamp:
+As a verifier, you may check if a token is still valid by retrieving its timestamp:
 
 ```solidity
 uint256 creation_date = soulboundToken.tokenTimestamp(token_id);
@@ -66,7 +67,7 @@ View the [Install](./INSTALL.md) guide if you want to run this service locally o
 
 ## REST API
 
-Only token issuers should need to use this API. Please check the [Postman Collection](./postman/test-collection.json) to exercise it.
+Only token issuers should need to use this API. Please check the [Postman Collection](./postman/test-collection.json) to exercise it. On-chain verifiers should use the Smart Contract's relevant methods.
 
 Example request:
 
