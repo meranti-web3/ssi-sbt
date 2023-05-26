@@ -10,7 +10,7 @@ This API is meant to be used by Issuers of Verifiable Credentials to generate th
 
 ## Contract addresses
 
-/!\ Those addresses may change, contracts are not updatable
+As a dApp (verifier), to verify if a user possesses a given token, you'll need to access the relevant Smart Contract and call the relevant methods.
 
 ### Altme DeFi Proof Of Compliance (DEFI)
 
@@ -21,13 +21,52 @@ This is the address for Altme's DeFi Proof Of Compliance (DEFI) token (https://i
 | BSC Testnet | [`0x1589257BBfA909B1b3D17148a7a3D27A37ee92ba`](https://testnet.bscscan.com/address/0x1589257BBfA909B1b3D17148a7a3D27A37ee92ba) |
 | BSC Mainnet | [`0x240863E65b2ace78eda93334be396FF220f14354`](https://bscscan.com/address/0x240863E65b2ace78eda93334be396FF220f14354)         |
 
+/!\ Those addresses may change, contracts are not updatable
+
+## Soulbound Token API
+
+The solidity code for the Soulbound Token can be found in [`./sbt-contract`](./sbt-contract/contracts/SoulboundTokens.sol).
+
+The contract ABI can be found in [`./sbt-contract/abi.json`](./sbt-contract/abi.json).
+
+It's implementing the ERC721 interface from OpenZeppelin and will work like most ERC721.
+
+The main differences are:
+
+- transfers are blocked.
+- we record the token's creation date so we can check if it has expired.
+
+### Verify if a user does own a given token
+
+```solidity
+require(soulboundToken.balanceOf(address) > 0, "address doesn't have this token");
+```
+
+### Burn a token
+
+A token owner can burn their own token via a Solidity call.
+
+```solidity
+soulboundToken.burn(token_id);
+```
+
+### Check expiry on-chain
+
+As a verifier, you may check that a token is still valid by retrieving its timestamp:
+
+```solidity
+uint256 creation_date = soulboundToken.tokenTimestamp(token_id);
+
+require(block.timestamp < (creation_date + 3600 * 24 * 60), "token has expired");
+```
+
 ## Install
 
 View the [Install](./INSTALL.md) guide if you want to run this service locally or deploy it to another environment.
 
 ## REST API
 
-Please use the [Postman Collection](./postman/test-collection.json) to exercise this API.
+Only token issuers should need to use this API. Please check the [Postman Collection](./postman/test-collection.json) to exercise it.
 
 Example request:
 
@@ -153,41 +192,4 @@ Response:
     "token_uri": "ipfs://Qmf8Y4u1hYHaNYdhUUcvtKn3XM8JUk86zeqSjLvRkSoMsu",
     "token_creation_timestamp": 1684916584
 }
-```
-
-## Soulbound Token API
-
-The solidity code for the Soulbound Token can be found in [`./sbt-contract`](./sbt-contract/contracts/SoulboundTokens.sol).
-
-The contract ABI can be found in [`./sbt-contract/abi.json`](./sbt-contract/abi.json).
-
-It's implementing the ERC721 interface from OpenZeppelin and will work like most ERC721.
-
-The main differences are:
-
-- transfers are blocked
-- we record the token's creation date so we can check if it has expired.
-
-### Burn
-
-A token owner can burn its own token via a Solidity call:
-
-```solidity
-soulboundToken.burn(token_id);
-```
-
-### Check expiry on-chain
-
-A token's creation date can be retrieved to compute if it has expired:
-
-```solidity
-uint256 creation_date = soulboundToken.tokenTimestamp(token_id);
-
-require(block.timestamp < (creation_date + 3600 * 24 * 60), "token has expired");
-```
-
-### Check on-chain if an address owns a token
-
-```solidity
-require(soulboundToken.balanceOf(address) > 0, "address doesn't have this token");
 ```
