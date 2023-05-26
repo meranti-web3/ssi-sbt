@@ -176,12 +176,18 @@ A token owner can burn its own token via a Solidity call:
 soulboundToken.burn(token_id);
 ```
 
-### Check expiry on chain
+### Check expiry on-chain
 
 A token's creation date can be retrieved to compute if it has expired:
 
 ```solidity
 uint256 creation_date = soulboundToken.tokenTimestamp(token_id);
 
-require((timestamp + 3600 * 24 * 60) > creation_date, "token has expired");
+require(block.timestamp < (creation_date + 3600 * 24 * 60), "token has expired");
+```
+
+### Check on-chain if an address owns a token
+
+```solidity
+require(soulboundToken.balanceOf(address) > 0, "address doesn't have this token");
 ```
