@@ -27,3 +27,13 @@ REPORT_GAS=true npx hardhat test
 npx hardhat node
 npx hardhat run --network sepolia scripts/deploy.ts
 ```
+
+## Networks
+
+To deploy to additional networks, please add the relevant RPC nodes urls in the `.env` at the root of this project:
+
+```
+SEPOLIA_RPC_URL=<sepolia rpc node url>
+BSCTEST_RPC_URL=<binance test rpc node url>
+BSCMAIN_RPC_URL=<binance main rpc node url>
+```
