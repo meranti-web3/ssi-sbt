@@ -26,9 +26,9 @@ This is the address for Altme's DeFi Proof Of Compliance (DEFI) token (https://i
 
 ## Soulbound Token API
 
-The solidity code for the Soulbound Token can be found in [`./sbt-contract`](./sbt-contract/contracts/SoulboundTokens.sol).
+The solidity code for the Soulbound Token can be found in [`./sbt-contract-evm`](./sbt-contract-evm/contracts/SoulboundTokens.sol).
 
-The contract ABI can be found in [`./sbt-contract/abi.json`](./sbt-contract/abi.json).
+The contract ABI can be found in [`./sbt-contract-evm/abi.json`](./sbt-contract-evm/abi.json).
 
 It's implementing the ERC721 interface from OpenZeppelin and will work like most ERC721.
 

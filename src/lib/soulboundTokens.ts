@@ -4,7 +4,7 @@ import { ownerWallet } from "./network";
 
 export const soulboundTokens = new ethers.Contract(
   getEnvVar(ENVVARS.SBT_CONTRACT),
-  // ABI manually copy/pasted from ./sbt-contract/artifacts.
+  // ABI manually copy/pasted from ./sbt-contract-evm/artifacts.
   // copy/paste new interface after compilation when it changes
   [
     {
