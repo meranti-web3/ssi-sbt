@@ -18,11 +18,11 @@ First, setup a `.env` file:
 RPC_PROVIDER=<bsc node you want to connect to>
 WALLET_PRIVATE_KEY=
 WALLET_ADDRESS=
-SBT_CONTRACT=<see ./sbt-contract for deployment>
+SBT_CONTRACT=<see ./sbt-contract-evm for deployment>
 API_KEY=testKey # the postman collection expects testKey by default
 ```
 
-If you don't have an SBT contract handy, you can deploy a new one to your preferred network by following the `./sbt-contract/README.md`
+If you don't have an SBT contract handy, you can deploy a new one to your preferred network by following the `./sbt-contract-evm/README.md`
 
 ```
 npm run dev

@@ -1,0 +1,25 @@
+{
+  "name": "sbt-contract-tz",
+  "version": "1.0.0",
+  "description": "Smart Contracts for On Chain Verifiable Credentials",
+  "private": true,
+  "scripts": {
+    "test": "jest --runInBand --testTimeout=10000 tests",
+    "test-debug": "node --inspect-brk node_modules/.bin/jest --runInBand --testTimeout=10000 tests",
+    "compile": "./run compile-contract"
+  },
+  "keywords": [],
+  "author": "Meranti.fr",
+  "license": "MIT",
+  "dependencies": {
+    "@taquito/taquito": "^16.2.0"
+  },
+  "devDependencies": {
+    "@taquito/signer": "^16.2.0",
+    "@taquito/tzip12": "^16.2.0",
+    "@taquito/utils": "^16.2.0",
+    "bignumber.js": "^9.1.1",
+    "dotenv": "^16.1.4",
+    "jest": "^29.5.0"
+  }
+}
