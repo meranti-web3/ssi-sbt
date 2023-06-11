@@ -2,7 +2,6 @@
   "name": "sbt-contract-evm",
   "version": "1.0.0",
   "description": "Smart Contracts for On Chain Verifiable Credentials",
-  "main": "index.js",
   "private": true,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

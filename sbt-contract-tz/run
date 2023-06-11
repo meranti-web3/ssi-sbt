@@ -1,0 +1,15 @@
+#! /usr/bin/env bash
+
+set -euo pipefail
+
+function compile-contract() {
+    ligo compile contract ./contracts/SoulboundToken.jsligo --michelson-format json -o ./build/soulboundToken.json 
+}
+
+function start-sandbox() {
+  docker run --rm --name tz-sandbox --detach -p 20000:20000 \
+    -e block_time=2 \
+    oxheadalpha/flextesa:latest mumbaibox start
+}
+
+"$@"
