@@ -1,4 +1,6 @@
+const { compose } = require("@taquito/taquito");
 const { tzip12 } = require("@taquito/tzip12");
+const { tzip16 } = require("@taquito/tzip16");
 
 module.exports = {
   originateFA2Contract: async function originateFA2Contract(tezos, code, storage) {
@@ -10,6 +12,6 @@ module.exports = {
 
     await originatonOperation.confirmation();
 
-    return tezos.contract.at(contractAddress, tzip12);
+    return tezos.contract.at(contractAddress, compose(tzip12, tzip16));
   }
 };
