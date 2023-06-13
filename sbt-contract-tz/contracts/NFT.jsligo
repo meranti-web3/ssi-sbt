@@ -7,7 +7,6 @@
 namespace Ledger {
    type token_id = nat;
    type owner = address;
-   type last_token_id = nat;
    export type t = big_map<token_id,owner>;
 
    export const is_owner_of = (ledger: t, token_id: token_id, owner: address): bool => {
@@ -32,9 +31,9 @@ namespace Storage {
    type token_id = nat;
    export type t = {
       ledger : Ledger.t,
-      token_ids : set<token_id>,
       token_metadata : TokenMetadata.t,
-      metadata : Metadata.t
+      metadata : Metadata.t,
+      current_token_id: nat
    };
 
    export const is_owner_of = (s: t, owner: address, token_id: token_id) : bool =>
@@ -115,9 +114,6 @@ const total_supply = ([token_id, s] : [nat , storage]) : nat => {
    Storage.assert_token_exist (s, token_id);
    return (1 as nat);
 };
-
-// @view
-const all_tokens = ([_, s] : [unit , storage]) : set<nat> => s.token_ids;
 
 // @view
 const token_metadata = ([p, s] : [nat, storage]) : TokenMetadata.data =>

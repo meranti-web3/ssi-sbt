@@ -7,7 +7,7 @@ type storage =
     ledger: NFT.Ledger.t,
     metadata: NFT.Metadata.t,
     token_metadata: NFT.TokenMetadata.t,
-    token_ids : set<NFT.Storage.token_id>
+    current_token_id : nat
   };
 
 type ret = [list<operation>, storage];
@@ -22,29 +22,31 @@ type transfer = list<{
 }>
 
 type parameter =
-  | ["Mint", bytes,bytes,bytes,bytes] //token_id, name , description  ,symbol , ipfsUrl
+  | ["Mint", address, bytes]
   | ["Add_administrator", address]
   | ["Transfer", transfer]
   | ["Balance_of", NFT.balance_of];
 
 const mint = (
-  name: bytes,
-  description: bytes,
-  symbol: bytes,
+  owner: address,
   ipfsUrl: bytes,
   s: storage
 ): ret => {
-  const token_id = Set.cardinal(s.token_ids);
+  if (!Set.mem(Tezos.get_sender(), s.administrators)) {
+    failwith (Errors.not_owner);
+  }
+
+  const token_id = s.current_token_id;
 
   const token_info: map<string, bytes> =
     Map.literal(
       list(
         [
-          ["name", name],
-          ["description", description],
+          ["name", (bytes `DeFi`)],
+          ["description", (bytes `Proof of DeFi Compliance`)],
           ["interfaces", (bytes `["TZIP-12"]`)],
           ["uri", ipfsUrl],
-          ["symbol", symbol],
+          ["symbol", (bytes `DEFI`)],
           ["decimals", (bytes `0`)]
         ]
       )
@@ -69,7 +71,7 @@ const mint = (
     list([]) as list<operation>,
     {
       ...s,
-      ledger: Big_map.add(token_id, Tezos.get_sender(), s.ledger) as
+      ledger: Big_map.add(token_id, owner, s.ledger) as
         NFT.Ledger.t,
       metadata: Big_map.literal(
         list([["", bytes `tezos-storage:data`], ["data", metadata]])
@@ -79,7 +81,7 @@ const mint = (
         { token_id: token_id, token_info: token_info },
         s.token_metadata
       ),
-      token_ids: Set.add(token_id, s.token_ids)
+      current_token_id: token_id + (1 as nat)
     }
   ]
 };
@@ -88,8 +90,8 @@ const main = ([p, s]: [parameter, storage]): ret =>
   match(
     p,
     {
-      Mint: (p: [bytes, bytes, bytes, bytes]) => {
-        mint(p[0], p[1], p[2], p[3], s);
+      Mint: ([owner, ipfsUrl]: [address, bytes]) => {
+        mint(owner, ipfsUrl, s);
       },
       Add_administrator: (p: address) => {
         if (Set.mem(Tezos.get_sender(), s.administrators)) {
@@ -112,7 +114,7 @@ const main = ([p, s]: [parameter, storage]): ret =>
               ledger: s.ledger,
               metadata: s.metadata,
               token_metadata: s.token_metadata,
-              token_ids: s.token_ids
+              current_token_id: s.current_token_id
             }
           );
         return [
@@ -122,7 +124,7 @@ const main = ([p, s]: [parameter, storage]): ret =>
             ledger: ret2[1].ledger,
             metadata: ret2[1].metadata,
             token_metadata: ret2[1].token_metadata,
-            token_ids: ret2[1].token_ids
+            current_token_id: s.current_token_id
           }
         ]
       }
