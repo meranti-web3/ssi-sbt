@@ -27,16 +27,16 @@ describe("Given SoulboundToken is deployed", () => {
   describe("When a new token is minted", () => {
     beforeAll(async () => {
       soulboundTokenInstance = await originateFA2Contract(tezos, souldboundTokenContract, {
-        administrators: [],
+        administrators: ["tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb"],
         ledger: MichelsonMap.fromLiteral({}),
         metadata: MichelsonMap.fromLiteral({}),
         token_metadata: MichelsonMap.fromLiteral({}),
         operators: MichelsonMap.fromLiteral({}),
-        token_ids: []
+        current_token_id: new BigNumber(0)
       });
 
       const mintOp = await soulboundTokenInstance.methods
-        .mint(char2Bytes("DeFi"), char2Bytes("Proof of DeFi Compliance"), char2Bytes("DEFI"), char2Bytes("ifps://uri1"))
+        .mint("tz1aSkwEot3L2kmUvcoxzjMomb9mvBNuzFK6", char2Bytes("ifps://uri1"))
         .send();
 
       await mintOp.confirmation();
@@ -57,12 +57,7 @@ describe("Given SoulboundToken is deployed", () => {
     describe("When minting a 2nd token", () => {
       beforeAll(async () => {
         const mintOp = await soulboundTokenInstance.methods
-          .mint(
-            char2Bytes("DeFi"),
-            char2Bytes("Proof of DeFi Compliance"),
-            char2Bytes("DEFI"),
-            char2Bytes("ifps://uri2")
-          )
+          .mint("tz1aSkwEot3L2kmUvcoxzjMomb9mvBNuzFK6", char2Bytes("ifps://uri2"))
           .send();
 
         await mintOp.confirmation();
