@@ -1,0 +1,90 @@
+#import "./NFT.jsligo" "NFT"
+#import "./common/errors.mligo" "Errors"
+type storage = {
+  administrator: address,
+  ledger: NFT.Ledger.t,
+  token_metadata: NFT.TokenMetadata.t,
+  current_token_id: nat
+};
+
+type ret = [list<operation>, storage];
+
+type transfer =
+  list<
+    { from_: address, txs: list<{ to_: address, token_id: nat, amount: nat }> }
+  >;
+
+type parameter =
+  | ["Mint", address, bytes]
+  | ["Update_administrator", address]
+  | ["Transfer", transfer]
+  | ["Balance_of", NFT.balance_of];
+
+const mint = (owner: address, ipfsUrl: bytes, s: storage): ret => {
+  if (Tezos.get_sender() != s.administrator) {
+    failwith(Errors.not_owner)
+  };
+  const token_id = s.current_token_id;
+  const token_info: map<string, bytes> =
+    Map.literal(
+      list(
+        [
+          ["name", (bytes `DeFi`)],
+          ["description", (bytes `Proof of DeFi Compliance`)],
+          ["interfaces", (bytes `["TZIP-12"]`)],
+          ["uri", ipfsUrl],
+          ["symbol", (bytes `DEFI`)],
+          ["decimals", (bytes `0`)]
+        ]
+      )
+    ) as map<string, bytes>;
+  return [
+    list([]) as list<operation>,
+    {
+      ...s,
+      ledger: Big_map.add(token_id, owner, s.ledger) as NFT.Ledger.t,
+      token_metadata: Big_map.add(
+        token_id,
+        { token_id: token_id, token_info: token_info },
+        s.token_metadata
+      ),
+      current_token_id: token_id + (1 as nat)
+    }
+  ]
+};
+
+const main = ([p, s]: [parameter, storage]): ret =>
+  match(
+    p,
+    {
+      Mint: ([owner, ipfsUrl]: [address, bytes]) => { mint(owner, ipfsUrl, s) },
+      Update_administrator: (p: address): ret => {
+        if (Tezos.get_sender() != s.administrator) {
+          failwith(Errors.not_owner)
+        } else {
+          return [list([]), { ...s, administrator: p }]
+        }
+      },
+      Transfer: (_p: transfer) => { return failwith(Errors.no_transfer) },
+      Balance_of: (p: NFT.balance_of) => {
+        const ret2: [list<operation>, NFT.storage] =
+          NFT.balance_of(
+            p,
+            {
+              ledger: s.ledger,
+              token_metadata: s.token_metadata,
+              current_token_id: s.current_token_id
+            }
+          );
+        return [
+          ret2[0],
+          {
+            ...s,
+            ledger: ret2[1].ledger,
+            token_metadata: ret2[1].token_metadata,
+            current_token_id: s.current_token_id
+          }
+        ]
+      }
+    }
+  );

@@ -27,7 +27,7 @@ describe("Given SoulboundToken is deployed", () => {
   describe("When a new token is minted", () => {
     beforeAll(async () => {
       soulboundTokenInstance = await originateFA2Contract(tezos, souldboundTokenContract, {
-        administrators: ["tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb"],
+        administrator: "tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb",
         ledger: MichelsonMap.fromLiteral({}),
         metadata: MichelsonMap.fromLiteral({}),
         token_metadata: MichelsonMap.fromLiteral({}),
