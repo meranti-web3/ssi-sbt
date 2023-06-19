@@ -1,132 +1,71 @@
-#import "./NFT.jsligo" "NFT"
-#import "./common/errors.mligo" "Errors"
+type ipfs_url = string;
 
-type storage =
-  {
-    administrators: set<address>,
-    ledger: NFT.Ledger.t,
-    metadata: NFT.Metadata.t,
-    token_metadata: NFT.TokenMetadata.t,
-    current_token_id : nat
-  };
-
-type ret = [list<operation>, storage];
-
-type transfer = list<{
-   from_ : address,
-   txs   : list<{
-    to_      : address,
-    token_id : nat,
-    amount   : nat
-  }>
-}>
+type owner = address;
 
 type parameter =
-  | ["Mint", address, bytes]
-  | ["Add_administrator", address]
-  | ["Transfer", transfer]
-  | ["Balance_of", NFT.balance_of];
+  | ["Mint", owner, ipfs_url]
+  | ["Burn", owner]
+  | ["Add_admin", owner]
+  | ["Remove_admin", owner];
 
-const mint = (
-  owner: address,
-  ipfsUrl: bytes,
-  s: storage
-): ret => {
-  if (!Set.mem(Tezos.get_sender(), s.administrators)) {
-    failwith (Errors.not_owner);
-  }
+type storage = {
+  tokens: big_map<owner, ipfs_url>,
+  admins: set<address>,
+  name: string,
+  symbol: string
+};
 
-  const token_id = s.current_token_id;
+type return_ = [list<operation>, storage];
 
-  const token_info: map<string, bytes> =
-    Map.literal(
-      list(
-        [
-          ["name", (bytes `DeFi`)],
-          ["description", (bytes `Proof of DeFi Compliance`)],
-          ["interfaces", (bytes `["TZIP-12"]`)],
-          ["uri", ipfsUrl],
-          ["symbol", (bytes `DEFI`)],
-          ["decimals", (bytes `0`)]
-        ]
-      )
-    ) as map<string, bytes>;
-  const metadata: bytes =
-    bytes
-    `{
-      "name":"FA2 NFT Marketplace",
-      "description":"Example of FA2 implementation",
-      "version":"0.0.1",
-      "license":{"name":"MIT"},
-      "authors":["Marigold<contact@marigold.dev>"],
-      "homepage":"https://marigold.dev",
-      "source":{
-        "tools":["Ligo"],
-        "location":"https://github.com/ligolang/contract-catalogue/tree/main/lib/fa2"},
-      "interfaces":["TZIP-012"],
-      "errors": [],
-      "views": []
-      }`;
+const mint = (owner: owner, ipfs_url: ipfs_url, store: storage): return_ => {
+  if (!Set.mem(Tezos.get_sender(), store.admins)) {
+    return failwith("Access denied.")
+  };
   return [
-    list([]) as list<operation>,
-    {
-      ...s,
-      ledger: Big_map.add(token_id, owner, s.ledger) as
-        NFT.Ledger.t,
-      metadata: Big_map.literal(
-        list([["", bytes `tezos-storage:data`], ["data", metadata]])
-      ),
-      token_metadata: Big_map.add(
-        token_id,
-        { token_id: token_id, token_info: token_info },
-        s.token_metadata
-      ),
-      current_token_id: token_id + (1 as nat)
-    }
+    list([]),
+    { ...store, tokens: Big_map.add(owner, ipfs_url, store.tokens) }
   ]
 };
 
-const main = ([p, s]: [parameter, storage]): ret =>
+const burn = (owner: owner, store: storage): return_ => {
+  if (!Set.mem(Tezos.get_sender(), store.admins) || Tezos.get_sender() != owner) {
+    return failwith("Access denied.")
+  };
+  return [list([]), { ...store, tokens: Big_map.remove(owner, store.tokens) }]
+};
+
+const add_admin = (admin: address, store: storage): return_ => {
+  if (!Set.mem(Tezos.get_sender(), store.admins)) {
+    return failwith("Access denied.")
+  };
+  return [list([]), { ...store, admins: Set.add(admin, store.admins) }]
+};
+
+const remove_admin = (admin: address, store: storage): return_ => {
+  if (!Set.mem(Tezos.get_sender(), store.admins)) {
+    return failwith("Access denied.")
+  };
+  return [list([]), { ...store, admins: Set.remove(admin, store.admins) }]
+};
+
+const main = (action: parameter, store: storage): return_ =>
   match(
-    p,
+    action,
     {
-      Mint: ([owner, ipfsUrl]: [address, bytes]) => {
-        mint(owner, ipfsUrl, s);
-      },
-      Add_administrator: (p: address) => {
-        if (Set.mem(Tezos.get_sender(), s.administrators)) {
-          return [
-            list([]),
-            { ...s, administrators: Set.add(p, s.administrators) }
-          ]
-        } else {
-          return failwith("1")
-        }
-      },
-      Transfer: (_p: transfer) => {
-        return failwith(Errors.no_transfer);
-      },
-      Balance_of: (p: NFT.balance_of) => {
-        const ret2: [list<operation>, NFT.storage] =
-          NFT.balance_of(
-            p,
-            {
-              ledger: s.ledger,
-              metadata: s.metadata,
-              token_metadata: s.token_metadata,
-              current_token_id: s.current_token_id
-            }
-          );
-        return [
-          ret2[0],
-          {
-            ...s,
-            ledger: ret2[1].ledger,
-            metadata: ret2[1].metadata,
-            token_metadata: ret2[1].token_metadata,
-            current_token_id: s.current_token_id
-          }
-        ]
-      }
+      Mint: ([owner, ipfs_url]: parameter) => mint(owner, ipfs_url, store),
+      Burn: (owner: owner) => burn(owner, store),
+      Add_admin: (admin: owner) => add_admin(admin, store),
+      Remove_admin: (admin: owner) => remove_admin(admin, store)
     }
   );
+
+// @view
+const token_uri = (owner: owner, store: storage): ipfs_url =>
+  Option.unopt_with_error(
+    Big_map.find_opt(owner, store.tokens),
+    "Owner doesn't have a token"
+  );
+
+// @view
+const has_token = (owner: owner, store: storage): bool =>
+  Big_map.mem(owner, store.tokens);
