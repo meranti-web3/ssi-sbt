@@ -42,7 +42,7 @@ describe("Given SoulboundToken is deployed", () => {
       const storage = await soulboundTokenInstance.storage();
       expect(await storage.admins).toEqual(["tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb"]);
       expect(await storage.name).toEqual("Proof of DeFi Compliance");
-      expect(await storage.name).toEqual("Proof of DeFi Compliance");
+      expect(await storage.symbol).toEqual("DEFI");
     });
 
     it("Then returns its token uri", async () => {
