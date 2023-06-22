@@ -1,12 +1,9 @@
 import * as dotenv from "dotenv";
 dotenv.config();
-import { ethers } from "ethers";
 import express, { Request, Response } from "express";
 import bodyParser from "body-parser";
 import type { AddressInfo } from "net";
 
-import { soulboundTokens } from "./lib/soulboundTokens";
-import { provider } from "./lib/network";
 import { asyncErrorHandling, ClientError, errorMiddleware } from "./lib/errors";
 import { requireAuth } from "./lib/requireAuth";
 import { ENVVARS, getEnvVar } from "./lib/envVars";
@@ -19,6 +16,8 @@ app.use(
   })
 );
 
+import networks, { getBlockchainAdapter } from "./adapters/adapters";
+
 app.all(["/mint", "/burn"], requireAuth(getEnvVar(ENVVARS.API_KEY)));
 
 app.post<{
@@ -27,26 +26,23 @@ app.post<{
 }>(
   "/mint",
   asyncErrorHandling(async function (req: Request, res: Response) {
+    const blockchainNetwork = getBlockchainAdapter(req);
     const { transfer_to, ipfs_url } = req.body;
 
-    if (!ethers.utils.isAddress(transfer_to)) {
-      throw new ClientError(`address "${transfer_to}" is invalid`);
-    }
+    const hasToken = await blockchainNetwork.has(transfer_to);
 
-    const tokenCount = Number(await soulboundTokens.balanceOf(transfer_to));
+    let txHash;
 
-    let tx;
-
-    if (tokenCount > 0) {
+    if (hasToken) {
       throw new ClientError(`address ${transfer_to} already has this token`);
     } else {
-      tx = await soulboundTokens.mint(transfer_to, ipfs_url);
+      txHash = await blockchainNetwork.mint(transfer_to, ipfs_url);
     }
 
     res.status(200).send({
-      network: provider.network,
-      contract_address: soulboundTokens.address,
-      tx_hash: tx.hash
+      network: await blockchainNetwork.getNetwork(),
+      contract_address: blockchainNetwork.getContractAddress(),
+      tx_hash: txHash
     });
   })
 );
@@ -54,27 +50,23 @@ app.post<{
 app.post<{ address_for: string }>(
   "/burn",
   asyncErrorHandling(async function (req: Request, res: Response) {
+    const blockchainNetwork = getBlockchainAdapter(req);
     const { address_for } = req.body;
 
-    if (!ethers.utils.isAddress(address_for)) {
-      throw new ClientError(`address "${address_for}" is invalid`);
-    }
+    const hasToken = await blockchainNetwork.has(address_for);
 
-    let tokenCount = Number(await soulboundTokens.balanceOf(address_for));
+    let txHash;
 
-    let tx;
-
-    if (tokenCount === 0) {
+    if (!hasToken) {
       throw new ClientError(`address ${address_for} doesn't have this token`);
     } else {
-      const tokenId = await soulboundTokens.tokenOfOwnerByIndex(address_for, 0);
-      tx = await soulboundTokens.burn(tokenId);
+      txHash = await networks.BINANCE.burn(address_for);
     }
 
     res.status(200).send({
-      network: provider.network,
-      contract_address: soulboundTokens.address,
-      tx_hash: tx.hash
+      network: await blockchainNetwork.getNetwork(),
+      contract_address: blockchainNetwork.getContractAddress(),
+      tx_hash: txHash
     });
   })
 );
@@ -84,18 +76,15 @@ app.get<{
 }>(
   "/has/:address_for",
   asyncErrorHandling(async function (req: Request, res: Response) {
+    const blockchainNetwork = getBlockchainAdapter(req);
     const { address_for } = req.params;
 
-    if (!ethers.utils.isAddress(address_for)) {
-      throw new ClientError(`address "${address_for}" is invalid`);
-    }
-
-    const tokenCount = Number(await soulboundTokens.balanceOf(address_for));
+    const hasToken = await blockchainNetwork.has(address_for);
 
     res.status(200).send({
-      network: provider.network,
-      contract_address: soulboundTokens.address,
-      has_token: tokenCount > 0
+      network: await blockchainNetwork.getNetwork(),
+      contract_address: blockchainNetwork.getContractAddress(),
+      has_token: hasToken
     });
   })
 );
@@ -103,34 +92,29 @@ app.get<{
 app.get(
   "/info",
   asyncErrorHandling(async function (req: Request, res: Response) {
-    res.send({
-      network: provider.network,
-      contract_address: soulboundTokens.address,
-      name: await soulboundTokens.name(),
-      symbol: await soulboundTokens.symbol()
-    });
+    const blockchainNetwork = getBlockchainAdapter(req);
+
+    res.send(await blockchainNetwork.getInfo());
   })
 );
 
 app.get<{
   token_id: string;
 }>(
-  "/id/:token_id",
+  "/token/:address_for",
   asyncErrorHandling(async function (req: Request, res: Response) {
-    const token_id = Number(req.params.token_id);
+    const blockchainNetwork = getBlockchainAdapter(req);
+
+    const { address_for } = req.params;
 
     let token_uri, token_creation_timestamp;
 
-    try {
-      token_uri = await soulboundTokens.tokenURI(token_id);
-      token_creation_timestamp = await soulboundTokens.tokenTimestamp(token_id);
-    } catch (err) {
-      throw new ClientError(`token_id ${token_id} doesn't exist`);
-    }
+    token_uri = await blockchainNetwork.getTokenUri(address_for);
+    token_creation_timestamp = await blockchainNetwork.getTokenTimestamp(address_for);
 
     res.status(200).send({
-      network: provider.network,
-      contract_address: soulboundTokens.address,
+      network: await blockchainNetwork.getNetwork(),
+      contract_address: blockchainNetwork.getContractAddress(),
       token_uri,
       token_creation_timestamp: Number(token_creation_timestamp)
     });
