@@ -1,7 +1,10 @@
 import { Request } from "express";
-import { soulboundTokens } from "../lib/soulboundTokens";
-import EthereumAdapter from "./ethereum";
-import { ClientError } from "../lib/errors";
+import { soulboundTokens } from "../ethereum/soulboundTokens";
+import EthereumAdapter from "../ethereum/ethereum";
+import { ClientError } from "./errors";
+import TezosAdapter from "../tezos/tezos";
+import { tezos } from "../tezos/network";
+import { getEnvVar } from "./envVars";
 
 export type transactionHash = string;
 
@@ -26,11 +29,7 @@ export interface BlockchainAdapter {
   getNetwork(): Promise<unknown>;
 }
 
-const networks: Record<string, BlockchainAdapter> = {
-  BINANCE: new EthereumAdapter({
-    contract: soulboundTokens
-  })
-};
+let networks: Record<string, BlockchainAdapter>;
 
 export function getBlockchainAdapter(req: Request) {
   const networkName = req.get("X-BLOCKCHAIN");
@@ -48,4 +47,16 @@ export function getBlockchainAdapter(req: Request) {
   }
 }
 
-export default networks;
+export default networks = {};
+
+export async function initBlockchainAdapter() {
+  networks["BINANCE"] = new EthereumAdapter({
+    contract: soulboundTokens
+  });
+
+  const tzSoulboundTokenInstance = await tezos.contract.at(getEnvVar("TEZOS_SBT_CONTRACT_ADDRESS"));
+
+  networks["TEZOS"] = new TezosAdapter({
+    contract: tzSoulboundTokenInstance
+  });
+}

@@ -6,7 +6,9 @@
   "scripts": {
     "test": "jest --runInBand --testTimeout=10000 tests",
     "test-debug": "node --inspect-brk node_modules/.bin/jest --runInBand --testTimeout=10000 tests",
-    "compile": "./run compile-contract"
+    "compile": "./run compile-contract",
+    "deploy": "node ./deploy/deploy.js",
+    "deploy-debug": "node --inspect-brk ./deploy/deploy.js"
   },
   "keywords": [],
   "author": "Meranti.fr",

@@ -1,6 +1,6 @@
 import { Wallet } from "ethers";
 import { JsonRpcProvider } from "@ethersproject/providers";
-import { ENVVARS, getEnvVar } from "./envVars";
+import { ENVVARS, getEnvVar } from "../lib/envVars";
 
 export const provider = new JsonRpcProvider(getEnvVar(ENVVARS.RPC_PROVIDER));
 

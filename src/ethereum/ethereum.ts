@@ -1,8 +1,8 @@
 import { ethers } from "ethers";
-import { BlockchainAdapter, transactionHash } from "./adapters";
-import { soulboundTokens } from "../lib/soulboundTokens";
+import { BlockchainAdapter, transactionHash } from "../lib/adapters";
+import { soulboundTokens } from "./soulboundTokens";
 import { ClientError } from "../lib/errors";
-import { provider } from "../lib/network";
+import { provider } from "./network";
 
 function ensureValidAddress(address: string) {
   if (!ethers.utils.isAddress(address)) {

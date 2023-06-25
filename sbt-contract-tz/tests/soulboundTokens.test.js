@@ -14,11 +14,11 @@ describe("Given SoulboundToken is deployed", () => {
   let tezos;
 
   beforeAll(async () => {
-    tezos = new TezosToolkit(process.env.TZ_RPC_URL);
+    tezos = new TezosToolkit(process.env.TEZOS_RPC_URL);
     tezos.addExtension(new Tzip12Module());
 
     tezos.setProvider({
-      signer: new InMemorySigner("edsk3QoqBuvdamxouPhin7swCvkQNgq4jP5KZPbwWNnwdZpSpJiEbq")
+      signer: new InMemorySigner(process.env.TEZOS_WALLET_PRIVATE_KEY)
     });
   });
 

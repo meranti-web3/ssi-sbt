@@ -1,5 +1,5 @@
 import { ethers } from "ethers";
-import { ENVVARS, getEnvVar } from "./envVars";
+import { ENVVARS, getEnvVar } from "../lib/envVars";
 import { ownerWallet } from "./network";
 
 export const soulboundTokens = new ethers.Contract(
