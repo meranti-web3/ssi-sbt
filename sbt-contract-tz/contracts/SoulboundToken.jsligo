@@ -10,6 +10,7 @@ type parameter =
 
 type storage = {
   tokens: big_map<owner, ipfs_url>,
+  creation_dates: big_map<owner, timestamp>,
   admins: set<address>,
   name: string,
   symbol: string
@@ -21,9 +22,12 @@ const mint = (owner: owner, ipfs_url: ipfs_url, store: storage): return_ => {
   if (!Set.mem(Tezos.get_sender(), store.admins)) {
     return failwith("Access denied.")
   };
+  let new_tokens = Big_map.add(owner, ipfs_url, store.tokens);
+  let new_creation_dates =
+    Big_map.add(owner, Tezos.get_now(), store.creation_dates);
   return [
     list([]),
-    { ...store, tokens: Big_map.add(owner, ipfs_url, store.tokens) }
+    { ...store, tokens: new_tokens, creation_dates: new_creation_dates }
   ]
 };
 
@@ -31,7 +35,12 @@ const burn = (owner: owner, store: storage): return_ => {
   if (!Set.mem(Tezos.get_sender(), store.admins) || Tezos.get_sender() != owner) {
     return failwith("Access denied.")
   };
-  return [list([]), { ...store, tokens: Big_map.remove(owner, store.tokens) }]
+  let new_tokens = Big_map.remove(owner, store.tokens);
+  let new_creation_dates = Big_map.remove(owner, store.creation_dates);
+  return [
+    list([]),
+    { ...store, tokens: new_tokens, creation_dates: new_creation_dates }
+  ]
 };
 
 const add_admin = (admin: address, store: storage): return_ => {
@@ -65,6 +74,14 @@ const token_uri = (owner: owner, store: storage): ipfs_url =>
     Big_map.find_opt(owner, store.tokens),
     "Owner doesn't have a token"
   );
+
+// @view
+const token_creation_date = (owner: owner, store: storage): timestamp =>
+  Option.unopt_with_error(
+    Big_map.find_opt(owner, store.creation_dates),
+    "Owner doesn't have a token"
+  );
+
 
 // @view
 const has_token = (owner: owner, store: storage): bool =>
