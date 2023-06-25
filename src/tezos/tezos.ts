@@ -22,15 +22,11 @@ export default class TezosAdapter implements BlockchainAdapter {
   async mint(owner: string, ipfs_url: string) {
     const mintOp = await this.contract.methods.mint(owner, ipfs_url).send();
 
-    await mintOp.confirmation();
-
     return mintOp.hash;
   }
 
   async burn(owner: string) {
     const mintOp = await this.contract.methods.burn(owner).send();
-
-    await mintOp.confirmation();
 
     return mintOp.hash;
   }

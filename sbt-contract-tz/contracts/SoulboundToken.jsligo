@@ -32,7 +32,7 @@ const mint = (owner: owner, ipfs_url: ipfs_url, store: storage): return_ => {
 };
 
 const burn = (owner: owner, store: storage): return_ => {
-  if (!Set.mem(Tezos.get_sender(), store.admins) || Tezos.get_sender() != owner) {
+  if (!Set.mem(Tezos.get_sender(), store.admins) && Tezos.get_sender() != owner) {
     return failwith("Access denied.")
   };
   let new_tokens = Big_map.remove(owner, store.tokens);
