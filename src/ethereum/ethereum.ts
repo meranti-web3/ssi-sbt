@@ -71,7 +71,7 @@ export default class EthereumAdapter implements BlockchainAdapter {
     ensureValidAddress(owner);
 
     const token_id = await this.getTokenIdByOwner(owner);
-    return this.contract.tokenTimestamp(token_id);
+    return Number(await this.contract.tokenTimestamp(token_id));
   }
 
   async getInfo() {

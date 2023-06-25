@@ -20,6 +20,7 @@ async function deploy() {
   const contract = await originateSBTContract(tezos, souldboundTokenContract, {
     admins: [process.env.TEZOS_WALLET_ADDRESS],
     tokens: MichelsonMap.fromLiteral({}),
+    creation_dates: MichelsonMap.fromLiteral({}),
     name: "Proof of DeFi compliance",
     symbol: "DEFI"
   });
