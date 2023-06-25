@@ -27,6 +27,7 @@ describe("Given SoulboundToken is deployed", () => {
       soulboundTokenInstance = await originateSBTContract(tezos, souldboundTokenContract, {
         admins: ["tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb"],
         tokens: MichelsonMap.fromLiteral({}),
+        creation_dates: MichelsonMap.fromLiteral({}),
         name: "Proof of DeFi Compliance",
         symbol: "DEFI"
       });
@@ -50,6 +51,17 @@ describe("Given SoulboundToken is deployed", () => {
         viewCaller: soulboundTokenInstance.address
       })).toEqual("ipfs://uri1");
     });
+
+    it("Then returns its creation date", async () => {
+      const actualDate = new Date(await soulboundTokenInstance.contractViews.token_creation_date("tz1aSkwEot3L2kmUvcoxzjMomb9mvBNuzFK6").executeView({
+        viewCaller: soulboundTokenInstance.address
+      }));
+
+      const expectedDate = new Date((await soulboundTokenInstance.rpc.getBlockHeader()).timestamp);
+
+      expect(expectedDate).toEqual(actualDate);
+    });
+
 
     it("Then tells if the owner has a token", async () => {
       expect(await soulboundTokenInstance.contractViews.has_token("tz1aSkwEot3L2kmUvcoxzjMomb9mvBNuzFK6").executeView({
