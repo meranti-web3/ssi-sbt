@@ -24,7 +24,7 @@ export interface BlockchainAdapter {
   getName(): Promise<string>;
   getSymbol(): Promise<string>;
   getTokenUri(owner: string): Promise<string>;
-  getTokenTimestamp(owner: string): Promise<string>;
+  getTokenTimestamp(owner: string): Promise<string | number>;
   getInfo(): Promise<AdapterInfo>;
   getNetwork(): Promise<unknown>;
 }

@@ -53,14 +53,16 @@ export default class TezosAdapter implements BlockchainAdapter {
     return storage.symbol;
   }
 
-  getTokenUri(owner: string): Promise<string> {
+  getTokenUri(owner: string) {
     return this.contract.contractViews.has_token(owner).executeView({
       viewCaller: this.contract.address
     });
   }
 
-  getTokenTimestamp(owner: string): Promise<any> {
-    return Promise.resolve(0);
+  getTokenTimestamp(owner: string) {
+    return this.contract.contractViews.token_creation_date(owner).executeView({
+      viewCaller: this.contract.address
+    });
   }
 
   async getInfo() {

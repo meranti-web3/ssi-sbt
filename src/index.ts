@@ -115,7 +115,7 @@ app.get<{
       network: await blockchainNetwork.getNetwork(),
       contract_address: blockchainNetwork.getContractAddress(),
       token_uri,
-      token_creation_timestamp: Number(token_creation_timestamp)
+      token_creation_timestamp
     });
   })
 );
