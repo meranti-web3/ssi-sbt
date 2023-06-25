@@ -1,5 +1,3 @@
-const { tzip12 } = require("@taquito/tzip12");
-
 module.exports = {
   originateSBTContract: async function originateSBTContract(tezos, code, storage) {
     const originatonOperation = await tezos.contract.originate({
@@ -10,6 +8,6 @@ module.exports = {
 
     await originatonOperation.confirmation();
 
-    return tezos.contract.at(contractAddress, tzip12);
+    return tezos.contract.at(contractAddress);
   }
 };

@@ -4,6 +4,7 @@ import express, { Request, Response } from "express";
 import bodyParser from "body-parser";
 import type { AddressInfo } from "net";
 
+import { getBlockchainAdapter, initBlockchainAdapter } from "./lib/adapters";
 import { asyncErrorHandling, ClientError, errorMiddleware } from "./lib/errors";
 import { requireAuth } from "./lib/requireAuth";
 import { ENVVARS, getEnvVar } from "./lib/envVars";
@@ -15,8 +16,6 @@ app.use(
     extended: true
   })
 );
-
-import networks, { getBlockchainAdapter } from "./adapters/adapters";
 
 app.all(["/mint", "/burn"], requireAuth(getEnvVar(ENVVARS.API_KEY)));
 
@@ -60,7 +59,7 @@ app.post<{ address_for: string }>(
     if (!hasToken) {
       throw new ClientError(`address ${address_for} doesn't have this token`);
     } else {
-      txHash = await networks.BINANCE.burn(address_for);
+      txHash = await blockchainNetwork.burn(address_for);
     }
 
     res.status(200).send({
@@ -130,6 +129,12 @@ app.get("/", function (req, res) {
 // Error handling, this block should be defined last.
 app.use(errorMiddleware);
 
-const server = app.listen(process.env.PORT || 3000, function () {
-  console.log(`App listening on port ${(server.address() as AddressInfo)?.port}`);
-});
+async function initServer() {
+  await initBlockchainAdapter();
+
+  const server = app.listen(process.env.PORT || 3000, function () {
+    console.log(`App listening on port ${(server.address() as AddressInfo)?.port}`);
+  });
+}
+
+initServer();
