@@ -20,8 +20,13 @@ export class ServerError extends Error {
   uuid: string;
   code: number;
 
-  constructor(message: string) {
-    super(message);
+  constructor(message: string, options?: ErrorOptions) {
+    super(message, options);
+
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, ServerError);
+    }
+
     this.date = new Date().toISOString();
     this.uuid = randomUUID();
     this.code = 500;
@@ -36,7 +41,8 @@ export function errorMiddleware(err: Error, req: Request, res: Response, next: N
     res.status(err.code).send(`${err.name}, ${err.message}.\n error id #${err.uuid}`);
   } else {
     const serverError = new ServerError(err.message);
-    console.log(serverError);
+    console.error(`original error ${ serverError.uuid }\n`, err);
+    console.error("server error \n", serverError);
     res
       .status(serverError.code)
       .send(`Something went wrong, please reach out to support.\nerror id #${serverError.uuid}`);

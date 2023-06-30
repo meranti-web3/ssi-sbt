@@ -116,10 +116,14 @@ app.get<{
 
     const { address_for } = req.params;
 
-    let token_uri, token_creation_timestamp;
+    const hasToken = await blockchainNetwork.has(address_for);
 
-    token_uri = await blockchainNetwork.getTokenUri(address_for);
-    token_creation_timestamp = await blockchainNetwork.getTokenTimestamp(address_for);
+    if (!hasToken) {
+      throw new ClientError(`address ${address_for} doesn't have this token`);
+    }
+
+    const token_uri = await blockchainNetwork.getTokenUri(address_for);
+    const token_creation_timestamp = await blockchainNetwork.getTokenTimestamp(address_for);
 
     res.status(200).send({
       network: await blockchainNetwork.getNetwork(),
