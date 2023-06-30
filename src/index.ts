@@ -4,7 +4,7 @@ import express, { Request, Response } from "express";
 import bodyParser from "body-parser";
 import type { AddressInfo } from "net";
 
-import { getBlockchainAdapter, initBlockchainAdapter } from "./lib/adapters";
+import { getAvailableNetworks, getBlockchainAdapter, initBlockchainAdapter } from "./lib/adapters";
 import { asyncErrorHandling, ClientError, errorMiddleware } from "./lib/errors";
 import { requireAuth } from "./lib/requireAuth";
 import { ENVVARS, getEnvVar } from "./lib/envVars";
@@ -25,7 +25,7 @@ app.post<{
 }>(
   "/mint",
   asyncErrorHandling(async function (req: Request, res: Response) {
-    const blockchainNetwork = getBlockchainAdapter(req);
+    const blockchainNetwork = getBlockchainAdapter(req.get("X-BLOCKCHAIN"));
     const { transfer_to, ipfs_url } = req.body;
 
     const hasToken = await blockchainNetwork.has(transfer_to);
@@ -49,7 +49,7 @@ app.post<{
 app.post<{ address_for: string }>(
   "/burn",
   asyncErrorHandling(async function (req: Request, res: Response) {
-    const blockchainNetwork = getBlockchainAdapter(req);
+    const blockchainNetwork = getBlockchainAdapter(req.get("X-BLOCKCHAIN"));
     const { address_for } = req.body;
 
     const hasToken = await blockchainNetwork.has(address_for);
@@ -75,7 +75,7 @@ app.get<{
 }>(
   "/has/:address_for",
   asyncErrorHandling(async function (req: Request, res: Response) {
-    const blockchainNetwork = getBlockchainAdapter(req);
+    const blockchainNetwork = getBlockchainAdapter(req.get("X-BLOCKCHAIN"));
     const { address_for } = req.params;
 
     const hasToken = await blockchainNetwork.has(address_for);
@@ -91,9 +91,19 @@ app.get<{
 app.get(
   "/info",
   asyncErrorHandling(async function (req: Request, res: Response) {
-    const blockchainNetwork = getBlockchainAdapter(req);
+    const selectedBlockchain = req.get("X-BLOCKCHAIN");
 
-    res.send(await blockchainNetwork.getInfo());
+    res.send(
+      await Promise.all(
+        getAvailableNetworks().map(async (networkName) => {
+          return {
+            networkName,
+            selected: networkName === selectedBlockchain,
+            info: await getBlockchainAdapter(networkName).getInfo()
+          };
+        })
+      )
+    );
   })
 );
 
@@ -102,7 +112,7 @@ app.get<{
 }>(
   "/token/:address_for",
   asyncErrorHandling(async function (req: Request, res: Response) {
-    const blockchainNetwork = getBlockchainAdapter(req);
+    const blockchainNetwork = getBlockchainAdapter(req.get("X-BLOCKCHAIN"));
 
     const { address_for } = req.params;
 

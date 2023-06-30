@@ -31,9 +31,7 @@ export interface BlockchainAdapter {
 
 let networks: Record<string, BlockchainAdapter>;
 
-export function getBlockchainAdapter(req: Request) {
-  const networkName = req.get("X-BLOCKCHAIN");
-
+export function getBlockchainAdapter(networkName?: string) {
   if (!networkName) {
     throw new ClientError(`Please provide a X-BLOCKCHAIN header to specify the blockchain you'd like to connect to`);
   }
@@ -59,4 +57,8 @@ export async function initBlockchainAdapter() {
   networks["TEZOS"] = new TezosAdapter({
     contract: tzSoulboundTokenInstance
   });
+}
+
+export function getAvailableNetworks() {
+  return Object.keys(networks).sort((a, b) => (a < b ? -1 : 1));
 }
