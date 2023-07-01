@@ -22,7 +22,7 @@ This is the address for Altme's DeFi Proof Of Compliance (DEFI) token (https://i
 | -------------- | ------------------------------------------------------------------------------------------------------------------------------ |
 | BSC Testnet    | [`0x1589257BBfA909B1b3D17148a7a3D27A37ee92ba`](https://testnet.bscscan.com/address/0x1589257BBfA909B1b3D17148a7a3D27A37ee92ba) |
 | BSC Mainnet    | [`0x240863E65b2ace78eda93334be396FF220f14354`](https://bscscan.com/address/0x240863E65b2ace78eda93334be396FF220f14354)         |
-| Tezos Ghostnet | [`KT1JyVbngXYQy1FrbAJV4tQQaZwRmHj9o2jL`] (https://ghostnet.tzkt.io/KT1JyVbngXYQy1FrbAJV4tQQaZwRmHj9o2jL/operations/)           |
+| Tezos Ghostnet | [`KT1JyVbngXYQy1FrbAJV4tQQaZwRmHj9o2jL`](https://ghostnet.tzkt.io/KT1JyVbngXYQy1FrbAJV4tQQaZwRmHj9o2jL/operations/)           |
 
 /!\ Those addresses may change, contracts are not updatable
 
