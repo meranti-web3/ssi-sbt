@@ -1,4 +1,3 @@
-import { Request } from "express";
 import { soulboundTokens } from "../ethereum/soulboundTokens";
 import EthereumAdapter from "../ethereum/ethereum";
 import { ClientError } from "./errors";
@@ -16,7 +15,7 @@ interface AdapterInfo {
 }
 
 export interface BlockchainAdapter {
-  getContractAddress(): string;
+  getContractAddress(): Promise<string>;
   getBalanceOf(owner: string): Promise<number>;
   mint(owner: string, ipfs_url: string): Promise<transactionHash>;
   burn(owner: string): Promise<transactionHash>;

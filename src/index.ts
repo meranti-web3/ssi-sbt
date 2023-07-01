@@ -40,7 +40,7 @@ app.post<{
 
     res.status(200).send({
       network: await blockchainNetwork.getNetwork(),
-      contract_address: blockchainNetwork.getContractAddress(),
+      contract_address: await blockchainNetwork.getContractAddress(),
       tx_hash: txHash
     });
   })
@@ -64,7 +64,7 @@ app.post<{ address_for: string }>(
 
     res.status(200).send({
       network: await blockchainNetwork.getNetwork(),
-      contract_address: blockchainNetwork.getContractAddress(),
+      contract_address: await blockchainNetwork.getContractAddress(),
       tx_hash: txHash
     });
   })
@@ -82,7 +82,7 @@ app.get<{
 
     res.status(200).send({
       network: await blockchainNetwork.getNetwork(),
-      contract_address: blockchainNetwork.getContractAddress(),
+      contract_address: await blockchainNetwork.getContractAddress(),
       has_token: hasToken
     });
   })
@@ -127,7 +127,7 @@ app.get<{
 
     res.status(200).send({
       network: await blockchainNetwork.getNetwork(),
-      contract_address: blockchainNetwork.getContractAddress(),
+      contract_address: await blockchainNetwork.getContractAddress(),
       token_uri,
       token_creation_timestamp
     });

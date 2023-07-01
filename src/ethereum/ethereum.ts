@@ -1,11 +1,10 @@
 import { ethers } from "ethers";
 import { BlockchainAdapter, transactionHash } from "../lib/adapters";
-import { soulboundTokens } from "./soulboundTokens";
 import { ClientError } from "../lib/errors";
 import { provider } from "./network";
 
 function ensureValidAddress(address: string) {
-  if (!ethers.utils.isAddress(address)) {
+  if (!ethers.isAddress(address)) {
     throw new ClientError(`address "${address}" is invalid`);
   }
 }
@@ -17,8 +16,8 @@ export default class EthereumAdapter implements BlockchainAdapter {
     this.contract = contract;
   }
 
-  getContractAddress() {
-    return this.contract.address;
+  async getContractAddress() {
+    return this.contract.getAddress();
   }
 
   async getBalanceOf(owner: string) {
@@ -39,7 +38,12 @@ export default class EthereumAdapter implements BlockchainAdapter {
     ensureValidAddress(owner);
 
     const tokenId = await this.contract.tokenOfOwnerByIndex(owner, 0);
-    const tx = await soulboundTokens.burn(tokenId);
+
+    const estimatedGas = await this.contract.burn.estimateGas(tokenId);
+
+    const tx = await this.contract.burn(tokenId, {
+      gasLimit: estimatedGas + estimatedGas / 10n
+    });
 
     return tx.hash;
   }
@@ -76,15 +80,15 @@ export default class EthereumAdapter implements BlockchainAdapter {
 
   async getInfo() {
     return {
-      network: provider.network,
-      contract_address: this.getContractAddress(),
+      network: await provider.getNetwork(),
+      contract_address: await this.getContractAddress(),
       name: await this.getName(),
       symbol: await this.getSymbol()
     };
   }
 
   async getNetwork() {
-    return provider.network;
+    return provider.getNetwork();
   }
 
   private getTokenIdByOwner(owner: string): Promise<number> {
