@@ -1,7 +1,7 @@
 {
 	"info": {
 		"_postman_id": "4f2eb723-e837-4e28-af44-e2a6f0f71e04",
-		"name": "Test SSI-SBT",
+		"name": "Test SSI-SBT ETH",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "1399595"
 	},
@@ -21,6 +21,11 @@
 						"value": "application/json",
 						"type": "text",
 						"disabled": true
+					},
+					{
+						"key": "X-BLOCKCHAIN",
+						"value": "{{BLOCKCHAIN}}",
+						"type": "text"
 					}
 				],
 				"body": {
@@ -28,12 +33,12 @@
 					"urlencoded": [
 						{
 							"key": "transfer_to",
-							"value": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+							"value": "0xCdcc3Ae823F05935f0b9c35C1054e5C144401C0a",
 							"type": "text"
 						},
 						{
 							"key": "ipfs_url",
-							"value": "tester",
+							"value": "ipfs://test",
 							"type": "text"
 						}
 					]
@@ -54,7 +59,13 @@
 			"name": "info",
 			"request": {
 				"method": "GET",
-        "header": [],
+				"header": [
+					{
+						"key": "X-BLOCKCHAIN",
+						"value": "{{BLOCKCHAIN}}",
+						"type": "text"
+					}
+				],
 				"url": {
 					"raw": "{{API_URL}}/info",
 					"host": [
@@ -71,13 +82,19 @@
 			"name": "burn",
 			"request": {
 				"method": "POST",
-				"header": [],
+				"header": [
+					{
+						"key": "X-BLOCKCHAIN",
+						"value": "{{BLOCKCHAIN}}",
+						"type": "text"
+					}
+				],
 				"body": {
 					"mode": "urlencoded",
 					"urlencoded": [
 						{
 							"key": "address_for",
-							"value": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+							"value": "0xCdcc3Ae823F05935f0b9c35C1054e5C144401C0a",
 							"type": "text"
 						}
 					]
@@ -98,7 +115,13 @@
 			"name": "has token",
 			"request": {
 				"method": "GET",
-				"header": [],
+				"header": [
+					{
+						"key": "X-BLOCKCHAIN",
+						"value": "{{BLOCKCHAIN}}",
+						"type": "text"
+					}
+				],
 				"url": {
 					"raw": "{{API_URL}}/has/:address_for",
 					"host": [
@@ -111,7 +134,7 @@
 					"variable": [
 						{
 							"key": "address_for",
-							"value": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"
+							"value": "0xCdcc3Ae823F05935f0b9c35C1054e5C144401C0a"
 						}
 					]
 				}
@@ -166,6 +189,11 @@
 		{
 			"key": "API_URL",
 			"value": "localhost:3000"
+		},
+		{
+			"key": "BLOCKCHAIN",
+			"value": "BINANCE",
+			"type": "string"
 		}
 	]
 }

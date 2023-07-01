@@ -3,7 +3,8 @@
 Self Sovereign Identity based Soulbound Tokens (SBTs).
 
 SBTs are on-chain tokens holding personal information that can't be transfered (soulbound).
-They're implemented using ERC721 but restricting burns and tranfers.
+On Ethereum, they're implemented using ERC721 but restricting burns and tranfers.
+On Tezos however, they're implemented using a custom smart contract exhibiting the same behavior as the Ethereum one.
 This can be useful for on-chain dApps, in the gaming or DeFi worlds for instance, to permission access without going off-chain.
 
 This app is meant to be used by Issuers of Verifiable Credentials to generate the related SBTs for users who need to get permissioned access to dApps.
@@ -17,14 +18,15 @@ As a dApp (verifier), to verify if a user possesses a given token, you'll need t
 
 This is the address for Altme's DeFi Proof Of Compliance (DEFI) token (https://issuer.talao.co/nft/defi)
 
-| blockchain  | address                                                                                                                        |
-| ----------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| BSC Testnet | [`0x1589257BBfA909B1b3D17148a7a3D27A37ee92ba`](https://testnet.bscscan.com/address/0x1589257BBfA909B1b3D17148a7a3D27A37ee92ba) |
-| BSC Mainnet | [`0x240863E65b2ace78eda93334be396FF220f14354`](https://bscscan.com/address/0x240863E65b2ace78eda93334be396FF220f14354)         |
+| blockchain     | address                                                                                                                        |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| BSC Testnet    | [`0x1589257BBfA909B1b3D17148a7a3D27A37ee92ba`](https://testnet.bscscan.com/address/0x1589257BBfA909B1b3D17148a7a3D27A37ee92ba) |
+| BSC Mainnet    | [`0x240863E65b2ace78eda93334be396FF220f14354`](https://bscscan.com/address/0x240863E65b2ace78eda93334be396FF220f14354)         |
+| Tezos Ghostnet | [`KT1JyVbngXYQy1FrbAJV4tQQaZwRmHj9o2jL`] (https://ghostnet.tzkt.io/KT1JyVbngXYQy1FrbAJV4tQQaZwRmHj9o2jL/operations/)           |
 
 /!\ Those addresses may change, contracts are not updatable
 
-## Soulbound Token API
+## Soulbound Token API on EVM compatible blockchains
 
 The solidity code for the Soulbound Token can be found in [`./sbt-contract-evm`](./sbt-contract-evm/contracts/SoulboundTokens.sol).
 
@@ -61,6 +63,21 @@ uint256 creation_date = soulboundToken.tokenTimestamp(token_id);
 require(block.timestamp < (creation_date + 3600 * 24 * 60), "token has expired");
 ```
 
+## Soulbound Token API on the Tezos blockchain
+
+The JsLigo code for the Soulbound Token can be found in [`./sbt-contract-tz`](./sbt-contract-tz/contracts/SoulboundToken.jsligo).
+
+An SBT contract is a map of `owner` as an `address` and an `ipfs_url` for the token's metadata.
+Another map of `owner` and `timestamp` records the token's creation date.
+
+The Smart Contract offers 3 views to:
+
+1. Retrieve a `token_uri` given an owner's `address`
+2. Retrieve the `token_creation_date` to verify that it hasn't expired
+3. Verify if an owner has a token given a `KT1` address.
+
+![View Methods](./pics/views.png)
+
 ## Install
 
 View the [Install](./INSTALL.md) guide if you want to run this service locally or deploy it to another environment.
@@ -69,16 +86,20 @@ View the [Install](./INSTALL.md) guide if you want to run this service locally o
 
 Only token issuers should need to use this API. Please check the [Postman Collection](./postman/test-collection.json) to exercise it. On-chain verifiers should use the Smart Contract's relevant methods.
 
+This API works the exactly the same whether consuming an EVM blockchain or a Tezos blockchain. The `X-BLOCKCHAIN` header needs to be set to specify which blockchain to access.
+
 Example request:
 
 ### Mint
 
-Mint requires a `transfer_to` address and an `ipfs_url` url. Also make sure to set the `X-API-KEY` for authentication.
+Mint requires a `transfer_to` address and an `ipfs_url` url.
+Also make sure to set the `X-API-KEY` for authentication, as well as a `X-BLOCKCHAIN` header to specify the blockchain to mint the token to.
 
 ```curl
 curl --location --request POST 'localhost:3000/mint' \
 --header 'Content-Type: application/x-www-form-urlencoded' \
 --header 'X-API-KEY: testKey' \
+--header 'X-BLOCKCHAIN: BINANCE'
 --data-urlencode 'transfer_to=0x123address' \
 --data-urlencode 'ipfs_url=ipfs://ipfs-url'
 ```
@@ -89,9 +110,7 @@ Response:
 {
     "network": {
         "name": "bnbt",
-        "chainId": 97,
-        "ensAddress": null,
-        "_defaultProvider": null
+        "chainId": 97
     },
     "contract_address": "0x1589257BBfA909B1b3D17148a7a3D27A37ee92ba",
     "tx_hash": "0xae12071058be915466e66f1044b889ac0508d580ebfda59773396aaf88c57b21"
@@ -105,6 +124,7 @@ Burn requires an `address_for` address that represents the wallet public address
 ```curl
 curl --location --request POST 'localhost:3000/burn' \
 --header 'X-API-KEY: testKey' \
+--header 'X-BLOCKCHAIN: BINANCE'
 --header 'Content-Type: application/x-www-form-urlencoded' \
 --data-urlencode 'address_for=0x123address'
 ```
@@ -115,9 +135,7 @@ Response:
 {
     "network": {
         "name": "bnbt",
-        "chainId": 97,
-        "ensAddress": null,
-        "_defaultProvider": null
+        "chainId": 97
     },
     "contract_address": "0x1589257BBfA909B1b3D17148a7a3D27A37ee92ba",
     "tx_hash": "0x698c9601f8647c09e300ca62f3c5d857189d9cf9e61de1881b550649a13f583f"
@@ -126,7 +144,8 @@ Response:
 
 ### Info
 
-Info returns some useful information about the network being used (the blockchain that runs the smart contract) as well as the contract address and name of the token:
+Info returns some useful information about the network being used (the blockchain that runs the smart contract) as well as the contract address and name of the token.
+This endpoint lists all the available blockchains. The `networkName` value can be used to specify the `X-BLOCKCHAIN` header. When specified, it will mark the related network as `selected`. this could be useful to verify that the header works and maps to an linked blockchain.
 
 ```curl
 curl --location --request GET 'localhost:3000/info'
@@ -135,17 +154,34 @@ curl --location --request GET 'localhost:3000/info'
 Response
 
 ```
-{
-    "network": {
-        "name": "bnbt",
-        "chainId": 97,
-        "ensAddress": null,
-        "_defaultProvider": null
+[
+    {
+        "networkName": "BINANCE",
+        "selected": false,
+        "info": {
+            "network": {
+                "name": "bnbt",
+                "chainId": "97"
+            },
+            "contract_address": "0x1589257BBfA909B1b3D17148a7a3D27A37ee92ba",
+            "name": "Proof of DeFi compliance",
+            "symbol": "DEFI"
+        }
     },
-    "contract_address": "0x1589257BBfA909B1b3D17148a7a3D27A37ee92ba",
-    "name": "Proof of DeFi compliance",
-    "symbol": "DEFI"
-}
+    {
+        "networkName": "TEZOS",
+        "selected": true,
+        "info": {
+            "network": {
+                "name": "main",
+                "chainId": "NetXnHfVqm9iesp"
+            },
+            "contract_address": "KT1JyVbngXYQy1FrbAJV4tQQaZwRmHj9o2jL",
+            "symbol": "DEFI",
+            "name": "Proof of DeFi compliance"
+        }
+    }
+]
 ```
 
 ### Has
@@ -162,9 +198,7 @@ Response:
 {
     "network": {
         "name": "bnbt",
-        "chainId": 97,
-        "ensAddress": null,
-        "_defaultProvider": null
+        "chainId": 97
     },
     "contract_address": "0x1589257BBfA909B1b3D17148a7a3D27A37ee92ba",
     "has_token": true
@@ -176,7 +210,7 @@ Response:
 Retrieves the creation timestamp and token uri for a token. The token id is set in the url
 
 ```
-curl --location --request GET 'localhost:3000/id/0'
+curl --location --request GET 'localhost:3000/token/0xCdcc3Ae823F05935f0b9c35C1054e5C144401C0a'
 ```
 
 Response:
@@ -185,9 +219,7 @@ Response:
 {
     "network": {
         "name": "bnbt",
-        "chainId": 97,
-        "ensAddress": null,
-        "_defaultProvider": null
+        "chainId": 97
     },
     "contract_address": "0x1589257BBfA909B1b3D17148a7a3D27A37ee92ba",
     "token_uri": "ipfs://Qmf8Y4u1hYHaNYdhUUcvtKn3XM8JUk86zeqSjLvRkSoMsu",
