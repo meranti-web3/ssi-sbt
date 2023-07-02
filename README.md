@@ -173,7 +173,7 @@ Response
         "selected": true,
         "info": {
             "network": {
-                "name": "main",
+                "name": "tezos",
                 "chainId": "NetXnHfVqm9iesp"
             },
             "contract_address": "KT1JyVbngXYQy1FrbAJV4tQQaZwRmHj9o2jL",

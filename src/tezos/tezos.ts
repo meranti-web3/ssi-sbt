@@ -1,14 +1,25 @@
+import { ContractAbstraction, ContractProvider, MichelsonMap } from "@taquito/taquito";
 import { BlockchainAdapter } from "../lib/adapters";
+import { tezos } from "./network";
+
+interface SoulboundTokenStorage {
+  owner: string;
+  admins: string[];
+  tokens: MichelsonMap<string, string>;
+  creation_dates: MichelsonMap<string, string>;
+  name: string;
+  symbol: string;
+}
 
 export default class TezosAdapter implements BlockchainAdapter {
   contract;
 
-  constructor({ contract }: { contract: any }) {
+  constructor({ contract }: { contract: ContractAbstraction<ContractProvider> }) {
     this.contract = contract;
   }
 
   getContractAddress() {
-    return this.contract.address;
+    return Promise.resolve(this.contract.address);
   }
 
   async getBalanceOf(owner: string) {
@@ -38,13 +49,13 @@ export default class TezosAdapter implements BlockchainAdapter {
   }
 
   async getName() {
-    const storage = await this.contract.storage();
+    const storage = (await this.contract.storage()) as SoulboundTokenStorage;
 
     return storage.name;
   }
 
   async getSymbol() {
-    const storage = await this.contract.storage();
+    const storage = (await this.contract.storage()) as SoulboundTokenStorage;
 
     return storage.symbol;
   }
@@ -64,7 +75,7 @@ export default class TezosAdapter implements BlockchainAdapter {
   async getInfo() {
     return {
       network: await this.getNetwork(),
-      contract_address: this.getContractAddress(),
+      contract_address: await this.getContractAddress(),
       symbol: await this.getSymbol(),
       name: await this.getName()
     };
@@ -72,8 +83,8 @@ export default class TezosAdapter implements BlockchainAdapter {
 
   async getNetwork() {
     return {
-      name: this.contract.rpc.chain,
-      chainId: await this.contract.rpc.getChainId()
+      name: "tezos",
+      chainId: await tezos.rpc.getChainId()
     };
   }
 }

@@ -34,14 +34,14 @@ export class ServerError extends Error {
   }
 }
 
-export function errorMiddleware(err: Error, req: Request, res: Response, next: NextFunction) {
+export function errorMiddleware(err: Error, req: Request, res: Response) {
   if (err instanceof ClientError) {
     console.error(err);
     res.statusMessage = err.name;
     res.status(err.code).send(`${err.name}, ${err.message}.\n error id #${err.uuid}`);
   } else {
     const serverError = new ServerError(err.message);
-    console.error(`original error ${ serverError.uuid }\n`, err);
+    console.error(`original error ${serverError.uuid}\n`, err);
     console.error("server error \n", serverError);
     res
       .status(serverError.code)
