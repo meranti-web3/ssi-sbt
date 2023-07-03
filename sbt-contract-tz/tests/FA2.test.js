@@ -25,9 +25,10 @@ describe("Given SoulboundToken is deployed", () => {
   describe("When a new token is minted", () => {
     beforeAll(async () => {
       soulboundTokenInstance = await originateSBTContract(tezos, souldboundTokenContract, {
+        token_counter: 0,
         admins: ["tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb"],
         tokens: MichelsonMap.fromLiteral({}),
-        creation_dates: MichelsonMap.fromLiteral({}),
+        tokens_by_owner: MichelsonMap.fromLiteral({}),
         name: "Proof of DeFi Compliance",
         symbol: "DEFI"
       });
@@ -60,13 +61,7 @@ describe("Given SoulboundToken is deployed", () => {
     });
 
     it("Then offers an FA2 compatible balance_of method", async () => {
-      await soulboundTokenInstance.methods.balance_of({
-        requests: [{
-          owner: "tz1aSkwEot3L2kmUvcoxzjMomb9mvBNuzFK6",
-          token_id: 0
-        }
-        ]
-      })
+      await soulboundTokenInstance.methods.mint("tz1iGCuoqC9LRTXJq5Gjni5KhY77bPG8M5XH", "ipfs://uri1").send();
     });
   });
 });

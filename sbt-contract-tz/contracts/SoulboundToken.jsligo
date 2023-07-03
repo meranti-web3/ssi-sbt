@@ -16,6 +16,8 @@ type balance_of = {
   callback: contract<list<callback>>
 };
 
+type token_data = { owner, ipfs_url, creation_date: timestamp };
+
 type parameter =
   | ["Mint", owner, ipfs_url]
   | ["Burn", owner]
@@ -25,8 +27,9 @@ type parameter =
   | ["Balance_of", balance_of];
 
 type storage = {
-  tokens: big_map<owner, ipfs_url>,
-  creation_dates: big_map<owner, timestamp>,
+  token_counter: nat,
+  tokens: big_map<nat, token_data>,
+  tokens_by_owner: big_map<owner, nat>,
   admins: set<address>,
   name: string,
   symbol: string
@@ -38,12 +41,23 @@ const mint = (owner: owner, ipfs_url: ipfs_url, store: storage): return_ => {
   if (!Set.mem(Tezos.get_sender(), store.admins)) {
     return failwith("FA2_NOT_OPERATOR")
   };
-  let new_tokens = Big_map.add(owner, ipfs_url, store.tokens);
-  let new_creation_dates =
-    Big_map.add(owner, Tezos.get_now(), store.creation_dates);
+  if (Big_map.mem(owner, store.tokens_by_owner)) {
+    return failwith("Owner already has a token")
+  };
+  let new_token =
+    { owner: owner, ipfs_url: ipfs_url, creation_date: Tezos.get_now() };
+  let new_tokens = Big_map.add(store.token_counter, new_token, store.tokens);
+  let new_tokens_by_owner =
+    Big_map.add(owner, store.token_counter, store.tokens_by_owner);
+  let new_token_counter = store.token_counter + (1 as nat);
   return [
     list([]),
-    { ...store, tokens: new_tokens, creation_dates: new_creation_dates }
+    {
+      ...store,
+      tokens: new_tokens,
+      token_counter: new_token_counter,
+      tokens_by_owner: new_tokens_by_owner
+    }
   ]
 };
 
@@ -51,11 +65,16 @@ const burn = (owner: owner, store: storage): return_ => {
   if (!Set.mem(Tezos.get_sender(), store.admins) && Tezos.get_sender() != owner) {
     return failwith("FA2_NOT_OPERATOR")
   };
-  let new_tokens = Big_map.remove(owner, store.tokens);
-  let new_creation_dates = Big_map.remove(owner, store.creation_dates);
+  let token_id: nat =
+    Option.unopt_with_error(
+      Big_map.find_opt(owner, store.tokens_by_owner),
+      "Owner doesn't have this token"
+    );
+  let new_tokens_by_owner = Big_map.remove(owner, store.tokens_by_owner);
+  let new_tokens = Big_map.remove(token_id, store.tokens);
   return [
     list([]),
-    { ...store, tokens: new_tokens, creation_dates: new_creation_dates }
+    { ...store, tokens: new_tokens, tokens_by_owner: new_tokens_by_owner }
   ]
 };
 
@@ -79,8 +98,11 @@ const transfer = (_transfer_params: list<transfer_params>, _store: storage)
 const balance_of = (balance_of: balance_of, store: storage): return_ => {
   const { requests, callback } = balance_of;
   const get_balance_info = (request: request): callback => {
-    // const { owner, token_id } = request;
-    return ({ request: request, balance: 1 as nat })
+    let balance_ = 0 as nat;
+    if (Big_map.mem(request.owner, store.tokens_by_owner)) {
+      balance_ = 1 as nat
+    };
+    return ({ request: request, balance: balance_ })
   };
   const callback_param = List.map(get_balance_info, requests);
   const operation = Tezos.transaction(callback_param, (0 as tez), callback);
@@ -95,26 +117,40 @@ const main = (action: parameter, store: storage): return_ =>
       Burn: (o: owner) => burn(o, store),
       Add_admin: (a: owner) => add_admin(a, store),
       Remove_admin: (a: owner) => remove_admin(a, store),
-      Transfer: (tp: list<transfer_params>) =>
-        transfer(tp, store),
+      Transfer: (tp: list<transfer_params>) => transfer(tp, store),
       Balance_of: (bo: balance_of) => balance_of(bo, store)
     }
   );
 
 // @view
-const token_uri = (owner: owner, store: storage): ipfs_url =>
-  Option.unopt_with_error(
-    Big_map.find_opt(owner, store.tokens),
-    "Owner doesn't have a token"
-  );
+const token_uri = (owner: owner, store: storage): ipfs_url => {
+  let token_id: nat =
+    Option.unopt_with_error(
+      Big_map.find_opt(owner, store.tokens_by_owner),
+      "Owner doesn't have a token"
+    );
+  return match(
+    Big_map.find_opt(token_id, store.tokens),
+    { Some: token => token.ipfs_url, None: () => failwith("Unexpected error.") }
+  )
+};
 
 // @view
-const token_creation_date = (owner: owner, store: storage): timestamp =>
-  Option.unopt_with_error(
-    Big_map.find_opt(owner, store.creation_dates),
-    "Owner doesn't have a token"
-  );
+const token_creation_date = (owner: owner, store: storage): timestamp => {
+  let token_id: nat =
+    Option.unopt_with_error(
+      Big_map.find_opt(owner, store.tokens_by_owner),
+      "Owner doesn't have a token"
+    );
+  return match(
+    Big_map.find_opt(token_id, store.tokens),
+    {
+      Some: token => token.creation_date,
+      None: () => failwith("Unexpected error.")
+    }
+  )
+};
 
 // @view
 const has_token = (owner: owner, store: storage): bool =>
-  Big_map.mem(owner, store.tokens);
+  Big_map.mem(owner, store.tokens_by_owner);
