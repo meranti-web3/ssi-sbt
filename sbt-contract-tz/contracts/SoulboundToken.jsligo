@@ -2,11 +2,20 @@ type ipfs_url = string;
 
 type owner = address;
 
+type transfer_params = {
+  from_ : address;
+  tx: list<{
+    to_: address;
+    token_id: nat;
+  }>
+};
+
 type parameter =
   | ["Mint", owner, ipfs_url]
   | ["Burn", owner]
   | ["Add_admin", owner]
-  | ["Remove_admin", owner];
+  | ["Remove_admin", owner]
+  | ["Transfer", list<transfer_params>];
 
 type storage = {
   tokens: big_map<owner, ipfs_url>,
@@ -20,7 +29,7 @@ type return_ = [list<operation>, storage];
 
 const mint = (owner: owner, ipfs_url: ipfs_url, store: storage): return_ => {
   if (!Set.mem(Tezos.get_sender(), store.admins)) {
-    return failwith("Access denied.")
+    return failwith("FA2_NOT_OPERATOR")
   };
   let new_tokens = Big_map.add(owner, ipfs_url, store.tokens);
   let new_creation_dates =
@@ -33,7 +42,7 @@ const mint = (owner: owner, ipfs_url: ipfs_url, store: storage): return_ => {
 
 const burn = (owner: owner, store: storage): return_ => {
   if (!Set.mem(Tezos.get_sender(), store.admins) && Tezos.get_sender() != owner) {
-    return failwith("Access denied.")
+    return failwith("FA2_NOT_OPERATOR")
   };
   let new_tokens = Big_map.remove(owner, store.tokens);
   let new_creation_dates = Big_map.remove(owner, store.creation_dates);
@@ -45,17 +54,21 @@ const burn = (owner: owner, store: storage): return_ => {
 
 const add_admin = (admin: address, store: storage): return_ => {
   if (!Set.mem(Tezos.get_sender(), store.admins)) {
-    return failwith("Access denied.")
+    return failwith("FA2_NOT_ADMIN")
   };
   return [list([]), { ...store, admins: Set.add(admin, store.admins) }]
 };
 
 const remove_admin = (admin: address, store: storage): return_ => {
   if (!Set.mem(Tezos.get_sender(), store.admins)) {
-    return failwith("Access denied.")
+    return failwith("FA2_NOT_ADMIN")
   };
   return [list([]), { ...store, admins: Set.remove(admin, store.admins) }]
 };
+
+const transfer = (_transfer_params: list<transfer_params>, _store: storage): return_ => {
+  return failwith("FA2_TX_DENIED")
+}
 
 const main = (action: parameter, store: storage): return_ =>
   match(
@@ -64,7 +77,8 @@ const main = (action: parameter, store: storage): return_ =>
       Mint: ([owner, ipfs_url]: parameter) => mint(owner, ipfs_url, store),
       Burn: (owner: owner) => burn(owner, store),
       Add_admin: (admin: owner) => add_admin(admin, store),
-      Remove_admin: (admin: owner) => remove_admin(admin, store)
+      Remove_admin: (admin: owner) => remove_admin(admin, store),
+      Transfer: (transfer_params: list<transfer_params>) => transfer(transfer_params, store)
     }
   );
 
