@@ -9,14 +9,31 @@ type transfer_params = {
 
 type request = { owner: address, token_id: nat };
 
-type callback = { request, balance: nat };
+type callback =
+// @layout:comb
+{
+  request: request,
+  balance: nat
+};
 
-type balance_of = {
+type balance_of =
+// @layout:comb
+{
   requests: list<request>,
   callback: contract<list<callback>>
 };
 
 type token_data = { owner, ipfs_url, creation_date: timestamp };
+
+type operator =
+// @layout:comb
+{
+   owner    : address,
+   operator : address,
+   token_id : nat,
+};
+
+type unit_update = ["Add_operator", operator] | ["Remove_operator", operator];
 
 type parameter =
   | ["Mint", owner, ipfs_url]
@@ -24,7 +41,8 @@ type parameter =
   | ["Add_admin", owner]
   | ["Remove_admin", owner]
   | ["Transfer", list<transfer_params>]
-  | ["Balance_of", balance_of];
+  | ["Balance_of", balance_of]
+  | ["Update_operators", list<unit_update>];
 
 type storage = {
   token_counter: nat,
@@ -109,6 +127,10 @@ const balance_of = (balance_of: balance_of, store: storage): return_ => {
   return [list([operation]), store]
 };
 
+const update_operators = (_unit_updates: list<unit_update>, _store: storage): return_ => {
+  return failwith("METHOD_NOT_IMPLEMENTED");
+}
+
 const main = (action: parameter, store: storage): return_ =>
   match(
     action,
@@ -118,7 +140,8 @@ const main = (action: parameter, store: storage): return_ =>
       Add_admin: (a: owner) => add_admin(a, store),
       Remove_admin: (a: owner) => remove_admin(a, store),
       Transfer: (tp: list<transfer_params>) => transfer(tp, store),
-      Balance_of: (bo: balance_of) => balance_of(bo, store)
+      Balance_of: (bo: balance_of) => balance_of(bo, store),
+      Update_operators: (uu: list<unit_update>) => update_operators(uu, store)
     }
   );
 
