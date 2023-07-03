@@ -34,7 +34,7 @@ describe("Given SoulboundToken is deployed", () => {
       });
 
       const mintOp = await soulboundTokenInstance.methods
-        .mint("tz1iGCuoqC9LRTXJq5Gjni5KhY77bPG8M5XH", "ipfs://uri1")
+        .mint("tz1aSkwEot3L2kmUvcoxzjMomb9mvBNuzFK6", "ipfs://uri1")
         .send();
 
       await mintOp.confirmation();

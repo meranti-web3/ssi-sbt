@@ -60,8 +60,46 @@ describe("Given SoulboundToken is deployed", () => {
       }
     });
 
-    it("Then offers an FA2 compatible balance_of method", async () => {
-      await soulboundTokenInstance.methods.mint("tz1iGCuoqC9LRTXJq5Gjni5KhY77bPG8M5XH", "ipfs://uri1").send();
+    /**
+     * I use this test to ensure our assets are visible in the FA2 compatible wallets
+     * turned out that temple was looking at the michelson entrypoints to determine the contract type
+     * and since I wasn't using layout:comb in the .jsligo, the order of the parameters was reverse
+     * and thus not following the specs. I keep this test it's useful
+     */
+    it("Then offers an FA2 compatible API", async () => {
+      const { entrypoints } = await tezos.rpc.getEntrypoints(soulboundTokenInstance.address);
+
+      expect(
+        isEntrypointsMatched(entrypoints, [
+          ["balance_of", "pair", "list", "contract"],
+          ["transfer", "list", "pair"],
+          ["update_operators", "list", "or"]
+        ])
+      ).toEqual(true);
     });
   });
 });
+
+function isEntrypointsMatched(entrypoints, schema) {
+  try {
+    for (const [name, prim, ...args] of schema) {
+      const entry = entrypoints[name];
+      if (
+        !entry ||
+        entry.prim !== prim ||
+        entry.args.length !== args.length ||
+        args.some((arg, i) => {
+          return arg !== entry.args[i]?.prim;
+        })
+      ) {
+        return false;
+      }
+    }
+
+    return true;
+  } catch (err) {
+    console.error(err);
+
+    return false;
+  }
+}
