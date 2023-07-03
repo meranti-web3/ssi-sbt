@@ -3,11 +3,17 @@ type ipfs_url = string;
 type owner = address;
 
 type transfer_params = {
-  from_ : address;
-  tx: list<{
-    to_: address;
-    token_id: nat;
-  }>
+  from_: address,
+  tx: list<{ to_: address, token_id: nat }>
+};
+
+type request = { owner: address, token_id: nat };
+
+type callback = { request, balance: nat };
+
+type balance_of = {
+  requests: list<request>,
+  callback: contract<list<callback>>
 };
 
 type parameter =
@@ -15,7 +21,8 @@ type parameter =
   | ["Burn", owner]
   | ["Add_admin", owner]
   | ["Remove_admin", owner]
-  | ["Transfer", list<transfer_params>];
+  | ["Transfer", list<transfer_params>]
+  | ["Balance_of", balance_of];
 
 type storage = {
   tokens: big_map<owner, ipfs_url>,
@@ -66,19 +73,31 @@ const remove_admin = (admin: address, store: storage): return_ => {
   return [list([]), { ...store, admins: Set.remove(admin, store.admins) }]
 };
 
-const transfer = (_transfer_params: list<transfer_params>, _store: storage): return_ => {
-  return failwith("FA2_TX_DENIED")
-}
+const transfer = (_transfer_params: list<transfer_params>, _store: storage)
+  : return_ => { return failwith("FA2_TX_DENIED") };
+
+const balance_of = (balance_of: balance_of, store: storage): return_ => {
+  const { requests, callback } = balance_of;
+  const get_balance_info = (request: request): callback => {
+    // const { owner, token_id } = request;
+    return ({ request: request, balance: 1 as nat })
+  };
+  const callback_param = List.map(get_balance_info, requests);
+  const operation = Tezos.transaction(callback_param, (0 as tez), callback);
+  return [list([operation]), store]
+};
 
 const main = (action: parameter, store: storage): return_ =>
   match(
     action,
     {
       Mint: ([owner, ipfs_url]: parameter) => mint(owner, ipfs_url, store),
-      Burn: (owner: owner) => burn(owner, store),
-      Add_admin: (admin: owner) => add_admin(admin, store),
-      Remove_admin: (admin: owner) => remove_admin(admin, store),
-      Transfer: (transfer_params: list<transfer_params>) => transfer(transfer_params, store)
+      Burn: (o: owner) => burn(o, store),
+      Add_admin: (a: owner) => add_admin(a, store),
+      Remove_admin: (a: owner) => remove_admin(a, store),
+      Transfer: (tp: list<transfer_params>) =>
+        transfer(tp, store),
+      Balance_of: (bo: balance_of) => balance_of(bo, store)
     }
   );
 
@@ -95,7 +114,6 @@ const token_creation_date = (owner: owner, store: storage): timestamp =>
     Big_map.find_opt(owner, store.creation_dates),
     "Owner doesn't have a token"
   );
-
 
 // @view
 const has_token = (owner: owner, store: storage): bool =>
