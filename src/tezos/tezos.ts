@@ -61,7 +61,7 @@ export default class TezosAdapter implements BlockchainAdapter {
   }
 
   getTokenUri(owner: string) {
-    return this.contract.contractViews.has_token(owner).executeView({
+    return this.contract.contractViews.token_uri(owner).executeView({
       viewCaller: this.contract.address
     });
   }
