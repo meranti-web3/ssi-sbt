@@ -18,7 +18,7 @@ describe("Given SoulboundToken is deployed", () => {
   beforeAll(async () => {
     tezos = new TezosToolkit(process.env.TEZOS_RPC_URL);
     tezos.addExtension(new Tzip12Module());
-    // tezos.addExtension(new Tzip16Module());
+    tezos.addExtension(new Tzip16Module());
 
     tezos.setProvider({
       signer: new InMemorySigner(process.env.TEZOS_WALLET_PRIVATE_KEY)
@@ -56,7 +56,7 @@ describe("Given SoulboundToken is deployed", () => {
     it("Then returns the relevant metadata", async () => {
       console.log(await soulboundTokenInstance.storage());
       console.log(await soulboundTokenInstance.tzip12().getTokenMetadata(0));
-      // console.log(await soulboundTokenInstance.tzip16().getMetadata());
+      console.log(await soulboundTokenInstance.tzip16().getMetadata());
     });
   });
 });

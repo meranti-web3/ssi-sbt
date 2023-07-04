@@ -13,6 +13,6 @@ module.exports = {
     await originatonOperation.confirmation();
     console.log(contractAddress);
 
-    return tezos.contract.at(contractAddress, tzip12);
+    return tezos.contract.at(contractAddress, compose(tzip12, tzip16));
   }
 };
