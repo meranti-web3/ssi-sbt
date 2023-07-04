@@ -67,10 +67,10 @@ const mint = (owner: owner, ipfs_url: ipfs_url, store: storage): return_ => {
   let new_token_counter = store.token_counter + (1 as nat);
 
   let token_metadata = Map.literal(list([
-    ["name", bytes `DeFitm`],
-    ["decimals", bytes `2`],
-    ["symbol", bytes `DeFitm`],
-    ["thumbnailUri", Bytes.pack(ipfs_url)]
+    ["name", Bytes.pack(store.name)],
+    ["decimals", bytes `0`],
+    ["symbol", Bytes.pack(store.symbol)],
+    ["", Bytes.pack(ipfs_url)]
   ]));
 
   let new_token_metadata = Big_map.add(store.token_counter, {

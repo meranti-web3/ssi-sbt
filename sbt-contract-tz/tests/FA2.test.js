@@ -5,6 +5,7 @@ require("dotenv").config({
 const { TezosToolkit, MichelsonMap } = require("@taquito/taquito");
 const { InMemorySigner } = require("@taquito/signer");
 const { Tzip12Module } = require("@taquito/tzip12");
+const { char2Bytes } = require("@taquito/utils");
 
 const { originateSBTContract } = require("./utils.js");
 const souldboundTokenContract = require("../build/soulboundToken.json");
@@ -29,7 +30,25 @@ describe("Given SoulboundToken is deployed", () => {
         admins: ["tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb"],
         tokens: MichelsonMap.fromLiteral({}),
         tokens_by_owner: MichelsonMap.fromLiteral({}),
-        metadata: MichelsonMap.fromLiteral({}),
+        token_metadata: MichelsonMap.fromLiteral({}),
+        metadata: MichelsonMap.fromLiteral({
+          "": char2Bytes("tezos-storage:data"),
+          data: char2Bytes(
+            JSON.stringify({
+              name: "DEFI",
+              description:
+                "This NFT is a proof of your KYC-AML compliance. It is not transferable. You can use it when you need to prove your comliance with DeFi services that have adopted decentralized identity to protect user data.",
+              version: "1.0",
+              license: "MIT",
+              authors: ["Olivier Scherrer", "Meranti", "contact@meranti.fr"],
+              homepage: "https://meranti.fr",
+              source:
+                "https://github.com/meranti-web3/ssi-sbt/blob/main/sbt-contract-tz/contracts/SoulboundToken.jsligo",
+              interfaces: ["TZIP-012"],
+              views: []
+            })
+          )
+        }),
         name: "Proof of DeFi Compliance",
         symbol: "DEFI"
       });

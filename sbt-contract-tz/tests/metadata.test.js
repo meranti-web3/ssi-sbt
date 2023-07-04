@@ -35,28 +35,61 @@ describe("Given SoulboundToken is deployed", () => {
         token_metadata: MichelsonMap.fromLiteral({}),
         metadata: MichelsonMap.fromLiteral({
           "": char2Bytes("tezos-storage:data"),
-          "data": char2Bytes(JSON.stringify({
-            name: "DEFI",
-            symbol: "DEFI",
-            thumbnailUri: "ipfs://QmUDYRnEsCv4vRmSY57PC6wZyc6xqGfZecdSaZmo2wnzDF",
-            decimals: 0
-          }))
+          data: char2Bytes(
+            JSON.stringify({
+              name: "DEFI",
+              description:
+                "This NFT is a proof of your KYC-AML compliance. It is not transferable. You can use it when you need to prove your comliance with DeFi services that have adopted decentralized identity to protect user data.",
+              version: "1.0",
+              license: "MIT",
+              authors: ["Olivier Scherrer", "Meranti", "contact@meranti.fr"],
+              homepage: "https://meranti.fr",
+              source:
+                "https://github.com/meranti-web3/ssi-sbt/blob/main/sbt-contract-tz/contracts/SoulboundToken.jsligo",
+              interfaces: ["TZIP-012"],
+              views: []
+            })
+          )
         }),
         name: "Proof of DeFi Compliance",
         symbol: "DEFI"
       });
 
       const mintOp = await soulboundTokenInstance.methods
-        .mint("tz1iGCuoqC9LRTXJq5Gjni5KhY77bPG8M5XH", "ipfs://uri1")
+        .mint("tz1iGCuoqC9LRTXJq5Gjni5KhY77bPG8M5XH", "ipfs://QmNtYrQYsTF5x9nQ3R34A7ES9kfbjtPVt3qcZ1E2425MxD")
         .send();
 
       await mintOp.confirmation();
     });
 
-    it("Then returns the relevant metadata", async () => {
-      console.log(await soulboundTokenInstance.storage());
-      console.log(await soulboundTokenInstance.tzip12().getTokenMetadata(0));
-      console.log(await soulboundTokenInstance.tzip16().getMetadata());
+    it("Then returns the relevant contract metadata", async () => {
+      expect(await soulboundTokenInstance.tzip12().getTokenMetadata(0)).toEqual({
+        token_id: 0,
+        decimals: 0,
+        name: "DeFi compliance proof",
+        symbol: "DEFI",
+        description:
+          "This NFT is a proof of your KYC-AML compliance. It is not transferable. You can use it when you need to prove your comliance with DeFi services that have adopted decentralized identity to protect user data.",
+        image: "ipfs://QmUDYRnEsCv4vRmSY57PC6wZyc6xqGfZecdSaZmo2wnzDF",
+        identifier: ""
+      });
+    });
+
+    it("Then returns the relevant token metadata", async () => {
+      const { metadata } = await soulboundTokenInstance.tzip16().getMetadata();
+
+      expect(metadata).toEqual({
+        name: "DEFI",
+        description:
+          "This NFT is a proof of your KYC-AML compliance. It is not transferable. You can use it when you need to prove your comliance with DeFi services that have adopted decentralized identity to protect user data.",
+        version: "1.0",
+        license: "MIT",
+        authors: ["Olivier Scherrer", "Meranti", "contact@meranti.fr"],
+        homepage: "https://meranti.fr",
+        source: "https://github.com/meranti-web3/ssi-sbt/blob/main/sbt-contract-tz/contracts/SoulboundToken.jsligo",
+        interfaces: ["TZIP-012"],
+        views: []
+      });
     });
   });
 });

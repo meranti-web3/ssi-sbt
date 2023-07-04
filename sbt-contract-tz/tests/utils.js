@@ -11,7 +11,6 @@ module.exports = {
     const { contractAddress } = originatonOperation;
 
     await originatonOperation.confirmation();
-    console.log(contractAddress);
 
     return tezos.contract.at(contractAddress, compose(tzip12, tzip16));
   }
