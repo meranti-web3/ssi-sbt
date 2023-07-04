@@ -100,10 +100,15 @@ const burn = (owner: owner, store: storage): return_ => {
       "Owner doesn't have this token"
     );
   let new_tokens_by_owner = Big_map.remove(owner, store.tokens_by_owner);
+  let new_token_metadata = Big_map.remove(token_id, store.token_metadata);
   let new_tokens = Big_map.remove(token_id, store.tokens);
   return [
     list([]),
-    { ...store, tokens: new_tokens, tokens_by_owner: new_tokens_by_owner }
+    { ...store, 
+      tokens: new_tokens,
+      tokens_by_owner: new_tokens_by_owner,
+      token_metadata: new_token_metadata
+    }
   ]
 };
 
