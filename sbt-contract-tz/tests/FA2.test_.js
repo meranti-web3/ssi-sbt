@@ -29,6 +29,7 @@ describe("Given SoulboundToken is deployed", () => {
         admins: ["tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb"],
         tokens: MichelsonMap.fromLiteral({}),
         tokens_by_owner: MichelsonMap.fromLiteral({}),
+        metadata: MichelsonMap.fromLiteral({}),
         name: "Proof of DeFi Compliance",
         symbol: "DEFI"
       });

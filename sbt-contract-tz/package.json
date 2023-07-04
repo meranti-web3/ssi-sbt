@@ -19,6 +19,7 @@
   "devDependencies": {
     "@taquito/signer": "^16.2.0",
     "@taquito/tzip12": "^16.2.0",
+    "@taquito/tzip16": "^17.0.0",
     "@taquito/utils": "^16.2.0",
     "bignumber.js": "^9.1.1",
     "dotenv": "^16.1.4",

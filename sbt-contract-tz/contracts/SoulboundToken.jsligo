@@ -9,31 +9,25 @@ type transfer_params = {
 
 type request = { owner: address, token_id: nat };
 
-type callback =
+type callback = 
 // @layout:comb
-{
-  request: request,
-  balance: nat
-};
+{ request, balance: nat };
 
 type balance_of =
 // @layout:comb
-{
-  requests: list<request>,
-  callback: contract<list<callback>>
-};
+{ requests: list<request>, callback: contract<list<callback>> };
 
 type token_data = { owner, ipfs_url, creation_date: timestamp };
 
 type operator =
 // @layout:comb
-{
-   owner    : address,
-   operator : address,
-   token_id : nat,
-};
+{ owner: address, operator: address, token_id: nat };
 
 type unit_update = ["Add_operator", operator] | ["Remove_operator", operator];
+
+type metadata = { token_id: nat, token_info: map<string, bytes> };
+
+type token_metadata_values = { token_id: nat, token_info: map<string, bytes> };
 
 type parameter =
   | ["Mint", owner, ipfs_url]
@@ -48,6 +42,8 @@ type storage = {
   token_counter: nat,
   tokens: big_map<nat, token_data>,
   tokens_by_owner: big_map<owner, nat>,
+  token_metadata: big_map<nat, token_metadata_values>,
+  metadata: big_map<string, bytes>,
   admins: set<address>,
   name: string,
   symbol: string
@@ -62,17 +58,32 @@ const mint = (owner: owner, ipfs_url: ipfs_url, store: storage): return_ => {
   if (Big_map.mem(owner, store.tokens_by_owner)) {
     return failwith("Owner already has a token")
   };
+
   let new_token =
     { owner: owner, ipfs_url: ipfs_url, creation_date: Tezos.get_now() };
   let new_tokens = Big_map.add(store.token_counter, new_token, store.tokens);
   let new_tokens_by_owner =
     Big_map.add(owner, store.token_counter, store.tokens_by_owner);
   let new_token_counter = store.token_counter + (1 as nat);
+
+  let token_metadata = Map.literal(list([
+    ["name", bytes `DeFitm`],
+    ["decimals", bytes `2`],
+    ["symbol", bytes `DeFitm`],
+    ["thumbnailUri", Bytes.pack(ipfs_url)]
+  ]));
+
+  let new_token_metadata = Big_map.add(store.token_counter, {
+    token_id: store.token_counter,
+    token_info: token_metadata
+  }, store.token_metadata);
+
   return [
     list([]),
     {
       ...store,
       tokens: new_tokens,
+      token_metadata: new_token_metadata,
       token_counter: new_token_counter,
       tokens_by_owner: new_tokens_by_owner
     }
@@ -127,9 +138,8 @@ const balance_of = (balance_of: balance_of, store: storage): return_ => {
   return [list([operation]), store]
 };
 
-const update_operators = (_unit_updates: list<unit_update>, _store: storage): return_ => {
-  return failwith("METHOD_NOT_IMPLEMENTED");
-}
+const update_operators = (_unit_updates: list<unit_update>, _store: storage)
+  : return_ => { return failwith("METHOD_NOT_IMPLEMENTED") };
 
 const main = (action: parameter, store: storage): return_ =>
   match(
