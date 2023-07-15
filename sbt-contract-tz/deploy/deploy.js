@@ -21,6 +21,7 @@ async function deploy() {
   const contract = await originateSBTContract(tezos, souldboundTokenContract, {
     token_counter: 0,
     admins: [process.env.TEZOS_WALLET_ADDRESS],
+    ledger: MichelsonMap.fromLiteral({}),
     tokens: MichelsonMap.fromLiteral({}),
     tokens_by_owner: MichelsonMap.fromLiteral({}),
     token_metadata: MichelsonMap.fromLiteral({}),
@@ -37,13 +38,13 @@ async function deploy() {
           homepage: "https://meranti.fr",
           source:
             "https://github.com/meranti-web3/ssi-sbt/blob/main/sbt-contract-tz/contracts/SoulboundToken.jsligo",
-          interfaces: ["TZIP-012"],
+          interfaces: ["TZIP-12"],
           views: []
         })
       )
     }),
-    name: "Proof of DeFi Compliance",
-    symbol: "DEFI"
+    name: char2Bytes("Proof of DeFi Compliance"),
+    symbol: char2Bytes("DEFI")
   });
 
   console.log(`SoulboundToken Contract deployed at ${contract.address}`);

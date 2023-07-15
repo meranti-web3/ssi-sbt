@@ -5,7 +5,7 @@ require("dotenv").config({
 const { TezosToolkit, MichelsonMap } = require("@taquito/taquito");
 const { InMemorySigner } = require("@taquito/signer");
 const { Tzip12Module } = require("@taquito/tzip12");
-const { char2Bytes } = require("@taquito/utils");
+const { char2Bytes, bytes2Char } = require("@taquito/utils");
 
 const { originateSBTContract } = require("./utils.js");
 const souldboundTokenContract = require("../build/soulboundToken.json");
@@ -28,6 +28,7 @@ describe("Given SoulboundToken is deployed", () => {
       soulboundTokenInstance = await originateSBTContract(tezos, souldboundTokenContract, {
         token_counter: 0,
         admins: ["tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb"],
+        ledger: MichelsonMap.fromLiteral({}),
         tokens: MichelsonMap.fromLiteral({}),
         tokens_by_owner: MichelsonMap.fromLiteral({}),
         token_metadata: MichelsonMap.fromLiteral({}),
@@ -49,12 +50,12 @@ describe("Given SoulboundToken is deployed", () => {
             })
           )
         }),
-        name: "Proof of DeFi Compliance",
-        symbol: "DEFI"
+        name: char2Bytes("Proof of DeFi Compliance"),
+        symbol: char2Bytes("DEFI")
       });
 
       const mintOp = await soulboundTokenInstance.methods
-        .mint("tz1aSkwEot3L2kmUvcoxzjMomb9mvBNuzFK6", "ipfs://uri1")
+        .mint("tz1aSkwEot3L2kmUvcoxzjMomb9mvBNuzFK6", char2Bytes("ipfs://uri1"))
         .send();
 
       await mintOp.confirmation();
@@ -63,15 +64,15 @@ describe("Given SoulboundToken is deployed", () => {
     it("Then returns its storage", async () => {
       const storage = await soulboundTokenInstance.storage();
       expect(await storage.admins).toEqual(["tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb"]);
-      expect(await storage.name).toEqual("Proof of DeFi Compliance");
-      expect(await storage.symbol).toEqual("DEFI");
+      expect(bytes2Char(await storage.name)).toEqual("Proof of DeFi Compliance");
+      expect(bytes2Char(await storage.symbol)).toEqual("DEFI");
     });
 
     it("Then returns its token uri", async () => {
-      expect(
+      expect(bytes2Char(
         await soulboundTokenInstance.contractViews.token_uri("tz1aSkwEot3L2kmUvcoxzjMomb9mvBNuzFK6").executeView({
           viewCaller: soulboundTokenInstance.address
-        })
+        }))
       ).toEqual("ipfs://uri1");
     });
 

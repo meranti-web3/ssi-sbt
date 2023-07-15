@@ -1,4 +1,5 @@
 import { ContractAbstraction, ContractProvider, MichelsonMap } from "@taquito/taquito";
+import { char2Bytes, bytes2Char } from "@taquito/utils";
 import { BlockchainAdapter } from "../lib/adapters";
 import { tezos } from "./network";
 
@@ -31,7 +32,7 @@ export default class TezosAdapter implements BlockchainAdapter {
   }
 
   async mint(owner: string, ipfs_url: string) {
-    const mintOp = await this.contract.methods.mint(owner, ipfs_url).send();
+    const mintOp = await this.contract.methods.mint(owner, char2Bytes(ipfs_url)).send();
 
     return mintOp.hash;
   }
@@ -60,10 +61,12 @@ export default class TezosAdapter implements BlockchainAdapter {
     return storage.symbol;
   }
 
-  getTokenUri(owner: string) {
-    return this.contract.contractViews.token_uri(owner).executeView({
+  async getTokenUri(owner: string) {
+    const tokenUri = await this.contract.contractViews.token_uri(owner).executeView({
       viewCaller: this.contract.address
     });
+
+    return bytes2Char(tokenUri);
   }
 
   getTokenTimestamp(owner: string) {
