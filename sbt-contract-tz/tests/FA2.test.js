@@ -28,6 +28,7 @@ describe("Given SoulboundToken is deployed", () => {
       soulboundTokenInstance = await originateSBTContract(tezos, souldboundTokenContract, {
         token_counter: 0,
         admins: ["tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb"],
+        ledger: MichelsonMap.fromLiteral({}),
         tokens: MichelsonMap.fromLiteral({}),
         tokens_by_owner: MichelsonMap.fromLiteral({}),
         token_metadata: MichelsonMap.fromLiteral({}),
@@ -49,12 +50,12 @@ describe("Given SoulboundToken is deployed", () => {
             })
           )
         }),
-        name: "Proof of DeFi Compliance",
-        symbol: "DEFI"
+        name: char2Bytes("Proof of DeFi Compliance"),
+        symbol: char2Bytes("DEFI")
       });
 
       const mintOp = await soulboundTokenInstance.methods
-        .mint("tz1aSkwEot3L2kmUvcoxzjMomb9mvBNuzFK6", "ipfs://uri1")
+        .mint("tz1aSkwEot3L2kmUvcoxzjMomb9mvBNuzFK6", char2Bytes("ipfs://uri1"))
         .send();
 
       await mintOp.confirmation();
@@ -66,10 +67,11 @@ describe("Given SoulboundToken is deployed", () => {
           .transfer([
             {
               from_: "tz1aSkwEot3L2kmUvcoxzjMomb9mvBNuzFK6",
-              tx: [
+              txs: [
                 {
                   to_: "tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb",
-                  token_id: 0
+                  token_id: 0,
+                  amount: 0
                 }
               ]
             }

@@ -1,10 +1,18 @@
-type ipfs_url = string;
+type ipfs_url = bytes;
 
 type owner = address;
 
-type transfer_params = {
+type transfer_params =
+// @layout:comb
+{
   from_: address,
-  tx: list<{ to_: address, token_id: nat }>
+  txs: list<
+  // @layout:comb
+  { 
+    to_: address, 
+    token_id: nat, 
+    amount: nat
+  }>
 };
 
 type request = { owner: address, token_id: nat };
@@ -40,13 +48,14 @@ type parameter =
 
 type storage = {
   token_counter: nat,
+  ledger: big_map<nat, address>,
   tokens: big_map<nat, token_data>,
   tokens_by_owner: big_map<owner, nat>,
   token_metadata: big_map<nat, token_metadata_values>,
   metadata: big_map<string, bytes>,
   admins: set<address>,
-  name: string,
-  symbol: string
+  name: bytes,
+  symbol: bytes
 };
 
 type return_ = [list<operation>, storage];
@@ -59,6 +68,7 @@ const mint = (owner: owner, ipfs_url: ipfs_url, store: storage): return_ => {
     return failwith("Owner already has a token")
   };
 
+  let new_ledger = Big_map.add(store.token_counter, owner, store.ledger);
   let new_token =
     { owner: owner, ipfs_url: ipfs_url, creation_date: Tezos.get_now() };
   let new_tokens = Big_map.add(store.token_counter, new_token, store.tokens);
@@ -67,10 +77,10 @@ const mint = (owner: owner, ipfs_url: ipfs_url, store: storage): return_ => {
   let new_token_counter = store.token_counter + (1 as nat);
 
   let token_metadata = Map.literal(list([
-    ["name", Bytes.pack(store.name)],
+    ["name", store.name],
     ["decimals", bytes `0`],
-    ["symbol", Bytes.pack(store.symbol)],
-    ["", Bytes.pack(ipfs_url)]
+    ["symbol", store.symbol],
+    ["", ipfs_url]
   ]));
 
   let new_token_metadata = Big_map.add(store.token_counter, {
@@ -82,6 +92,7 @@ const mint = (owner: owner, ipfs_url: ipfs_url, store: storage): return_ => {
     list([]),
     {
       ...store,
+      ledger: new_ledger,
       tokens: new_tokens,
       token_metadata: new_token_metadata,
       token_counter: new_token_counter,
@@ -99,12 +110,14 @@ const burn = (owner: owner, store: storage): return_ => {
       Big_map.find_opt(owner, store.tokens_by_owner),
       "Owner doesn't have this token"
     );
+  let new_ledger = Big_map.remove(token_id, store.ledger);
   let new_tokens_by_owner = Big_map.remove(owner, store.tokens_by_owner);
   let new_token_metadata = Big_map.remove(token_id, store.token_metadata);
   let new_tokens = Big_map.remove(token_id, store.tokens);
   return [
     list([]),
     { ...store, 
+      ledger: new_ledger,
       tokens: new_tokens,
       tokens_by_owner: new_tokens_by_owner,
       token_metadata: new_token_metadata
