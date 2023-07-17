@@ -22,7 +22,8 @@ This is the address for Altme's DeFi Proof Of Compliance (DEFI) token (https://i
 | -------------- | ------------------------------------------------------------------------------------------------------------------------------ |
 | BSC Testnet    | [`0x1589257BBfA909B1b3D17148a7a3D27A37ee92ba`](https://testnet.bscscan.com/address/0x1589257BBfA909B1b3D17148a7a3D27A37ee92ba) |
 | BSC Mainnet    | [`0x240863E65b2ace78eda93334be396FF220f14354`](https://bscscan.com/address/0x240863E65b2ace78eda93334be396FF220f14354)         |
-| Tezos Ghostnet | [`KT1JyVbngXYQy1FrbAJV4tQQaZwRmHj9o2jL`](https://ghostnet.tzkt.io/KT1JyVbngXYQy1FrbAJV4tQQaZwRmHj9o2jL/operations/)           |
+| Tezos Ghostnet | [`KT1JyVbngXYQy1FrbAJV4tQQaZwRmHj9o2jL`](https://ghostnet.tzkt.io/KT1JyVbngXYQy1FrbAJV4tQQaZwRmHj9o2jL/operations/)            |
+| Tezos Mainnet  | [`KT1WDYsU9EHL1c4Zm2fd2YtqVMpFZ66TasqK`](https://tzkt.io/KT1WDYsU9EHL1c4Zm2fd2YtqVMpFZ66TasqK/operations/)                     |
 
 /!\ Those addresses may change, contracts are not updatable
 
@@ -95,7 +96,7 @@ Example request:
 Mint requires a `transfer_to` address and an `ipfs_url` url.
 Also make sure to set the `X-API-KEY` for authentication, as well as a `X-BLOCKCHAIN` header to specify the blockchain to mint the token to.
 
-```curl
+```sh
 curl --location --request POST 'localhost:3000/mint' \
 --header 'Content-Type: application/x-www-form-urlencoded' \
 --header 'X-API-KEY: testKey' \
@@ -121,7 +122,7 @@ Response:
 
 Burn requires an `address_for` address that represents the wallet public address that we want to burn the token for. Also make sure to set the `X-API-KEY` for authentication.
 
-```curl
+```sh
 curl --location --request POST 'localhost:3000/burn' \
 --header 'X-API-KEY: testKey' \
 --header 'X-BLOCKCHAIN: BINANCE'
@@ -131,7 +132,7 @@ curl --location --request POST 'localhost:3000/burn' \
 
 Response:
 
-```
+```sh
 {
     "network": {
         "name": "bnbt",
@@ -153,7 +154,7 @@ curl --location --request GET 'localhost:3000/info'
 
 Response
 
-```
+```sh
 [
     {
         "networkName": "BINANCE",
@@ -170,7 +171,7 @@ Response
     },
     {
         "networkName": "TEZOS",
-        "selected": true,
+        "selected": false,
         "info": {
             "network": {
                 "name": "tezos",
@@ -188,8 +189,8 @@ Response
 
 Checks if a wallet has a token. The wallet to test is set in the `url`:
 
-```
-curl --location --request GET 'localhost:3000/has/0xCdcc3Ae823F05935f0b9c35C1054e5C144401C0a'
+```sh
+curl --location --request GET 'localhost:3000/has/0xCdcc3Ae823F05935f0b9c35C1054e5C144401C0a' --header 'X-BLOCKCHAIN: BINANCE'
 ```
 
 Response:
@@ -209,8 +210,8 @@ Response:
 
 Retrieves the creation timestamp and token uri for a token. The token id is set in the url
 
-```
-curl --location --request GET 'localhost:3000/token/0xCdcc3Ae823F05935f0b9c35C1054e5C144401C0a'
+```sh
+curl --location --request GET 'localhost:3000/token/0xCdcc3Ae823F05935f0b9c35C1054e5C144401C0a' --header 'X-BLOCKCHAIN: BINANCE'
 ```
 
 Response:
