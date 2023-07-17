@@ -34,7 +34,8 @@ export class ServerError extends Error {
   }
 }
 
-export function errorMiddleware(err: Error, req: Request, res: Response) {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export function errorMiddleware(err: Error, req: Request, res: Response, _next: NextFunction) {
   if (err instanceof ClientError) {
     console.error(err);
     res.statusMessage = err.name;
