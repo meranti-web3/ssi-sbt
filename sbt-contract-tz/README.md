@@ -65,10 +65,9 @@ This will execute the `deploy/deploy.js` script which for now is set to a DEFI t
 
 Note the resulting address and set it into `TEZOS_SBT_CONTRACT_ADDRESS` in the `.env` file
 
-
 ## FA2
 
-We initially started using an FA2 account following those documentations:
+We are using an FA2 Smart Contract following those documentations:
 
 FA2 Smart Contracts have multiple implementations. We've referred to the following documentation to design ours:
 
@@ -76,7 +75,10 @@ FA2 Smart Contracts have multiple implementations. We've referred to the followi
 2. [TZIP12 proposal](https://gitlab.com/tezos/tzip/-/blob/master/proposals/tzip-12/tzip-12.md)
 3. [Wine collection training](https://github.com/marigold-dev/training-nft-1)
 
-But this came with a number of issues:
+On top of this, we've made a few changes:
 
-1. balance_of isn't easy to use/test and not relevant to our use case since an owner may have only one NFT
-2. update_operators wasn't used
+1. the transfer method always fails since transfers aren't allowed
+2. a `ledger` big_map is maintained for compatibility with tzKT's indexer
+3. `update_operator` is a noop
+4. 3 utility views have been added to get the token's ipfs uri, the creation date or verify if an address owns a token.
+
