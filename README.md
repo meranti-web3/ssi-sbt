@@ -18,13 +18,14 @@ As a dApp (verifier), to verify if a user possesses a given token, you'll need t
 
 This is the address for Altme's DeFi Proof Of Compliance (DEFI) token (https://issuer.talao.co/nft/defi)
 
-| blockchain     | address                                                                                                                         |
-| -------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| ETH Testnet    | [`0x2285A09cABeb0D07005E86B71Af8e6C7e0497f29`](https://sepolia.etherscan.io/address/0x2285A09cABeb0D07005E86B71Af8e6C7e0497f29) |
-| BSC Testnet    | [`0x1589257BBfA909B1b3D17148a7a3D27A37ee92ba`](https://testnet.bscscan.com/address/0x1589257BBfA909B1b3D17148a7a3D27A37ee92ba)  |
-| BSC Mainnet    | [`0x240863E65b2ace78eda93334be396FF220f14354`](https://bscscan.com/address/0x240863E65b2ace78eda93334be396FF220f14354)          |
-| Tezos Ghostnet | [`KT1AcYTy6KGv8cpRUgfutFfg2HkphzGeub4t`](https://ghostnet.tzkt.io/KT1AcYTy6KGv8cpRUgfutFfg2HkphzGeub4t/operations/) |
-| Tezos Mainnet  | [`KT1WDYsU9EHL1c4Zm2fd2YtqVMpFZ66TasqK`](https://tzkt.io/KT1WDYsU9EHL1c4Zm2fd2YtqVMpFZ66TasqK/operations/)                      |
+| blockchain     | address                                                                                                                                    |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| ETH Testnet    | [`0x2285A09cABeb0D07005E86B71Af8e6C7e0497f29`](https://sepolia.etherscan.io/address/0x2285A09cABeb0D07005E86B71Af8e6C7e0497f29)            |
+| ETH Mainnet    | [`0x240863E65b2ace78eda93334be396FF220f14354`](https://etherscan.io/tx/0xfe7b5347bddc77d15d5af2ac7fe7fb01faee217f9656072e2f5183f99c568fda) |
+| BSC Testnet    | [`0x1589257BBfA909B1b3D17148a7a3D27A37ee92ba`](https://testnet.bscscan.com/address/0x1589257BBfA909B1b3D17148a7a3D27A37ee92ba)             |
+| BSC Mainnet    | [`0x240863E65b2ace78eda93334be396FF220f14354`](https://bscscan.com/address/0x240863E65b2ace78eda93334be396FF220f14354)                     |
+| Tezos Ghostnet | [`KT1AcYTy6KGv8cpRUgfutFfg2HkphzGeub4t`](https://ghostnet.tzkt.io/KT1AcYTy6KGv8cpRUgfutFfg2HkphzGeub4t/operations/)                        |
+| Tezos Mainnet  | [`KT1WDYsU9EHL1c4Zm2fd2YtqVMpFZ66TasqK`](https://tzkt.io/KT1WDYsU9EHL1c4Zm2fd2YtqVMpFZ66TasqK/operations/)                                 |
 
 /!\ Those addresses may change, contracts are not updatable
 
