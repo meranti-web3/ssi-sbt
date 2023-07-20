@@ -1,7 +1,6 @@
 import { ethers } from "ethers";
 import { BlockchainAdapter, transactionHash } from "../lib/adapters";
 import { ClientError } from "../lib/errors";
-import { provider } from "./network";
 
 function ensureValidAddress(address: string) {
   if (!ethers.isAddress(address)) {
@@ -11,9 +10,11 @@ function ensureValidAddress(address: string) {
 
 export default class EthereumAdapter implements BlockchainAdapter {
   contract!: ethers.Contract;
+  provider!: ethers.Provider;
 
-  constructor({ contract }: { contract: ethers.Contract }) {
+  constructor({ contract, provider }: { contract: ethers.Contract; provider: ethers.Provider }) {
     this.contract = contract;
+    this.provider = provider;
   }
 
   async getContractAddress() {
@@ -80,7 +81,7 @@ export default class EthereumAdapter implements BlockchainAdapter {
 
   async getInfo() {
     return {
-      network: await provider.getNetwork(),
+      network: await this.provider.getNetwork(),
       contract_address: await this.getContractAddress(),
       name: await this.getName(),
       symbol: await this.getSymbol()
@@ -88,7 +89,7 @@ export default class EthereumAdapter implements BlockchainAdapter {
   }
 
   async getNetwork() {
-    return provider.getNetwork();
+    return this.provider.getNetwork();
   }
 
   private getTokenIdByOwner(owner: string): Promise<number> {

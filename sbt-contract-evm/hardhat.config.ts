@@ -8,26 +8,13 @@ import "@nomicfoundation/hardhat-toolbox";
 
 const config: HardhatUserConfig = {
   solidity: "0.8.17",
-  networks: {}
+  networks: {
+  }
 };
 
-if (process.env.SEPOLIA_RPC_URL) {
-  config.networks!.sepolia = {
-    url: process.env.SEPOLIA_RPC_URL,
-    accounts: [process.env.WALLET_PRIVATE_KEY!]
-  };
-}
-
-if (process.env.BSCTEST_RPC_URL) {
-  config.networks!.bsctest = {
-    url: process.env.BSCTEST_RPC_URL,
-    accounts: [process.env.WALLET_PRIVATE_KEY!]
-  };
-}
-
-if (process.env.BSCMAIN_RPC_URL) {
-  config.networks!.bscmain = {
-    url: process.env.BSCMAIN_RPC_URL,
+if (process.env.RPC_URL) {
+  config.networks!.deployNetwork = {
+    url: process.env.RPC_URL,
     accounts: [process.env.WALLET_PRIVATE_KEY!]
   };
 }
