@@ -1,9 +1,10 @@
-import { soulboundTokens } from "../ethereum/soulboundTokens";
+import { getSoulboundTokenContract } from "../ethereum/soulboundTokens";
 import EthereumAdapter from "../ethereum/ethereum";
 import { ClientError } from "./errors";
 import TezosAdapter from "../tezos/tezos";
 import { tezos } from "../tezos/network";
-import { getEnvVar } from "./envVars";
+import { ENVVARS, getEnvVar } from "./envVars";
+import { createOwnerWallet } from "../ethereum/network";
 
 export type transactionHash = string;
 
@@ -47,8 +48,18 @@ export function getBlockchainAdapter(networkName?: string) {
 export default networks = {};
 
 export async function initBlockchainAdapter() {
+  const binanceWallet = createOwnerWallet(getEnvVar(ENVVARS.RPC_PROVIDER));
   networks["BINANCE"] = new EthereumAdapter({
-    contract: soulboundTokens
+    contract: getSoulboundTokenContract(getEnvVar(ENVVARS.SBT_CONTRACT), binanceWallet),
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    provider: binanceWallet.provider!
+  });
+
+  const ethereumWallet = createOwnerWallet(getEnvVar(ENVVARS.ETHEREUM_RPC_URL));
+  networks["ETHEREUM"] = new EthereumAdapter({
+    contract: getSoulboundTokenContract(getEnvVar(ENVVARS.ETHEREUM_SBT_CONTRACT), ethereumWallet),
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    provider: ethereumWallet.provider!
   });
 
   const tzSoulboundTokenInstance = await tezos.contract.at(getEnvVar("TEZOS_SBT_CONTRACT_ADDRESS"));
