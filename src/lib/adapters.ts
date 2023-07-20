@@ -63,7 +63,7 @@ export async function initBlockchainAdapter() {
   });
 
   const polygonPoSWallet = createOwnerWallet(getEnvVar(ENVVARS.POLYGONPOS_RPC_URL));
-  networks["POLYGONPOS"] = new EthereumAdapter({
+  networks["POLYGON"] = new EthereumAdapter({
     contract: getSoulboundTokenContract(getEnvVar(ENVVARS.POLYGONPOS_SBT_CONTRACT), polygonPoSWallet),
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     provider: polygonPoSWallet.provider!
