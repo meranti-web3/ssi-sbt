@@ -62,6 +62,13 @@ export async function initBlockchainAdapter() {
     provider: ethereumWallet.provider!
   });
 
+  const polygonPoSWallet = createOwnerWallet(getEnvVar(ENVVARS.POLYGONPOS_RPC_URL));
+  networks["POLYGONPOS"] = new EthereumAdapter({
+    contract: getSoulboundTokenContract(getEnvVar(ENVVARS.POLYGONPOS_SBT_CONTRACT), polygonPoSWallet),
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    provider: polygonPoSWallet.provider!
+  });
+
   const tzSoulboundTokenInstance = await tezos.contract.at(getEnvVar("TEZOS_SBT_CONTRACT_ADDRESS"));
 
   networks["TEZOS"] = new TezosAdapter({
