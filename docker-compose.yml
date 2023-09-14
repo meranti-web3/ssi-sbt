@@ -1,0 +1,14 @@
+version: "3.8"
+
+services:
+  tz-sandbox:
+    image: oxheadalpha/flextesa:latest
+    command: ["mumbaibox", "start"]
+    ports:
+      - "20000:20000"
+    environment:
+      - block_time=2
+  hardhat:
+    image: ethereumoptimism/hardhat
+    ports:
+      - "8545:8545"

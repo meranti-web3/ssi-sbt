@@ -1,5 +1,5 @@
-const { validateOperation, ValidationResult } = require("@taquito/utils");
 const axios = require("axios");
+//const ethers_1 = require("ethers");
 const qs = require("qs");
 
 function waitFor(testFn, timeout = 10000, tick = 2000) {
@@ -23,10 +23,10 @@ function waitFor(testFn, timeout = 10000, tick = 2000) {
 }
 
 describe("Given User doesn't own a token", () => {
-  const url = "http://localhost:3000/has/tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb";
+  const url = "http://localhost:3000/has/0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199";
 
   const headers = {
-    "X-BLOCKCHAIN": "TEZOS",
+    "X-BLOCKCHAIN": "ETHEREUM",
     "X-API-KEY": "testKey"
   };
 
@@ -40,33 +40,33 @@ describe("Given User doesn't own a token", () => {
     const mintUrl = "http://localhost:3000/mint";
 
     const data = qs.stringify({
-      transfer_to: "tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb",
-      ipfs_url: "ipfs://QmUQsfAufCrBdEGQU3tZ8Ym8SAL6Grv7xfmGyvy6taoPUg"
+      transfer_to: "0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199",
+      ipfs_url: ''
     });
 
     const headers = {
       "Content-Type": "application/x-www-form-urlencoded",
-      "X-BLOCKCHAIN": "TEZOS",
+      "X-BLOCKCHAIN": "ETHEREUM",
       "X-API-KEY": "testKey"
     };
 
     test("Verify if the operation hash is valid", async () => {
       const mintResponse = await axios.post(mintUrl, data, { headers });
 
-      expect(validateOperation(mintResponse.data.tx_hash)).toBe(ValidationResult.VALID);
+      expect(mintResponse.data.tx_hash).toMatch(/^0x([A-Fa-f0-9]{64})$/);
     });
 
     describe("Then a new token is created", () => {
-      const url = "http://localhost:3000/has/tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb";
+      const url = "http://localhost:3000/has/0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199";
 
       const headers = {
-        "X-BLOCKCHAIN": "TEZOS",
+        "X-BLOCKCHAIN": "ETHEREUM",
         "X-API-KEY": "testKey"
       };
 
       beforeAll(() =>
         waitFor(async function testFn() {
-          const hasResponse = await axios.get("http://localhost:3000/has/tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb", {
+          const hasResponse = await axios.get("http://localhost:3000/has/0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199", {
             headers
           });
 
@@ -84,19 +84,19 @@ describe("Given User doesn't own a token", () => {
         const burnUrl = "http://localhost:3000/burn";
 
         const data = qs.stringify({
-          address_for: "tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb"
+          address_for: "0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199"
         });
 
         const headers = {
           "Content-Type": "application/x-www-form-urlencoded",
-          "X-BLOCKCHAIN": "TEZOS",
+          "X-BLOCKCHAIN": "ETHEREUM",
           "X-API-KEY": "testKey"
         };
 
         test("Verify if the operation hash is valid", async () => {
           const burnResponse = await axios.post(burnUrl, data, { headers });
 
-          expect(validateOperation(burnResponse.data.tx_hash)).toBe(ValidationResult.VALID);
+          expect(burnResponse.data.tx_hash).toMatch(/^0x([A-Fa-f0-9]{64})$/);
         });
       });
     });
