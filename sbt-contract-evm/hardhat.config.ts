@@ -9,13 +9,14 @@ import "@nomicfoundation/hardhat-toolbox";
 const config: HardhatUserConfig = {
   solidity: "0.8.17",
   networks: {
-  }
+  },
 };
 
 if (process.env.RPC_URL) {
   config.networks!.deployNetwork = {
     url: process.env.RPC_URL,
-    accounts: [process.env.WALLET_PRIVATE_KEY!]
+    accounts: [process.env.WALLET_PRIVATE_KEY!],
+    loggingEnabled: false
   };
 }
 
