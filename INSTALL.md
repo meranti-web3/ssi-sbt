@@ -38,37 +38,34 @@ If you need to deploy this yourself, simply `npm run build` then `npm run start`
 
 ## Test
 
-First of all you need to run a Tezos node with docker, in the folder `sbt-contract-tz` there is an executable called `run` to run the container you have to run this cmd line :
+Before starting you need to add those variables in a `.env`
 
 ```sh
-./run start-sandbox
+RPC_URL=http://127.0.0.1:8545
+ETHEREUM_RPC_URL=http://127.0.0.1:8545/
+POLYGONPOS_RPC_URL=http://127.0.0.1:8545/
 ```
 
-then to compile the contract :
+1. First of all you need to run a Tezos and Ethereum node with docker, to do that you can run at the root:
 
 ```sh
-./run compile-contract
+docker compose up --detach
+```
+(Now you have the two blockchains running).
+
+2. Then you have to deploy your tezos and Ethereum contracts, you can simply run the shell script ./deploy.sh:
+
+```sh
+source ./deploy.sh
 ```
 
-after this you have run the deployed contract with this command line :
+You finally need to run npm start in the same terminal you used for the shell command `source ./deploy.sh`
+
+
+The node server needs to be on `port 3000`
+
+And finally to test the API run this command at the root, where the file test named `api.test.js` is located :
 
 ```sh
-npm run deploy
-```
-(the node version has to be 18 or above)
-
-after you deployed the contract you will receive an adress in the terminal that you need to copy and paste in your `.env`
-
-In case you don't know you run the node server with this command line :
-
-```sh
-npm start
-```
-
-The node server needs to be on port 3000
-
-And finally to test the API run this command at the root, where the tests are :
-
-```sh
-npx jest token.test.js
+npm run test
 ```
