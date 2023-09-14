@@ -6,7 +6,8 @@ async function main() {
 
   await soulboundTokens.deployed();
 
-  console.log(`soulboundTokens deployed to ${soulboundTokens.address}`);
+  console.warn(`soulboundTokens deployed at ${soulboundTokens.address}`);
+  console.log(soulboundTokens.address);
 }
 
 // We recommend this pattern to be able to use async/await everywhere

@@ -47,7 +47,8 @@ async function deploy() {
     symbol: char2Bytes("DEFI")
   });
 
-  console.log(`SoulboundToken Contract deployed at ${contract.address}`);
+  console.warn(`soulboundTokens deployed at ${contract.address}`);
+  console.log(contract.address);
 }
 
 
