@@ -13,10 +13,6 @@ jobs:
     - name: Checkout code repository
       uses: actions/checkout@v2
 
-    - name: Setup tmate session
-      if: ${{ failure() }}
-      uses: mxschmitt/action-tmate@v3
-
     - name: Start Docker-Compose up
       run: docker compose up -d
 
@@ -25,7 +21,7 @@ jobs:
 
     - name: Deploy Smart Contracts
       run: |
-        "source ./deploy.sh"
+        "./deploy.sh"
 
     - name: Start npm application
       run: |
