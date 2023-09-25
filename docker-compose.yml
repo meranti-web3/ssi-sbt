@@ -3,7 +3,7 @@ version: "3.8"
 services:
   tz-sandbox:
     image: oxheadalpha/flextesa:latest
-    command: ["mumbaibox", "start"]
+    command: ["start", "mumbaibox"]
     ports:
       - "20000:20000"
     environment:
