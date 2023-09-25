@@ -10,14 +10,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code repository #pour controler le code dans le repo
+    - name: Checkout code repository
       uses: actions/checkout@v2
 
     - name: Start Docker-Compose up #
       run: docker-compose up -d
 
     - name: Wait for Docker services to start
-      run: sleep 15 # attendre que le docker se lance, faut-il set up plus de temps ?
+      run: sleep 15
 
     - name: Deploy Smart Contracts
       run: |
