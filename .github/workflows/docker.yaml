@@ -13,11 +13,11 @@ jobs:
     - name: Checkout code repository
       uses: actions/checkout@v2
 
-    - name: Start Docker-Compose up #
-      run: docker-compose up -d
+    - name: Start Docker-Compose up
+      run: docker compose up -d
 
     - name: Wait for Docker services to start
-      run: sleep 15
+      run: sleep 20
 
     - name: Deploy Smart Contracts
       run: |
