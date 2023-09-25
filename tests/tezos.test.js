@@ -59,6 +59,9 @@ describe("Given User doesn't own a token", () => {
           "X-BLOCKCHAIN": "TEZOS",
           "X-API-KEY": "testKey"
         },
+        isValidHash: (hash) => {
+          return !!validateOperation(hash);
+        }
       },
       {
         mintUrl: "http://localhost:3000/mint",
@@ -71,6 +74,9 @@ describe("Given User doesn't own a token", () => {
           "X-BLOCKCHAIN": "ETHEREUM",
           "X-API-KEY": "testKey"
         },
+        isValidHash: (hash) => {
+          return /^0x([A-Fa-f0-9]{64})$/.test(hash);
+        }
       }
     ];
 
@@ -78,8 +84,7 @@ describe("Given User doesn't own a token", () => {
       const mintResponse = await axios.post(mintTests.mintUrl, mintTests.data, { headers: mintTests.headers });
 
 
-      expect(mintResponse.data.tx_hash).toBeDefined();
-      //expect(validateOperation(mintResponse.data.tx_hash)).toBe(ValidationResult.VALID);
+      expect(mintTests.isValidHash(mintResponse.data.tx_hash)).toBe(true)
     });
 
     describe("Then a new token is created", () => {
@@ -126,6 +131,10 @@ describe("Given User doesn't own a token", () => {
               "X-BLOCKCHAIN": "TEZOS",
               "X-API-KEY": "testKey"
             },
+            isValidHash: (hash) => {
+              return !!validateOperation(hash);
+            }
+                
           },
           {
             burnUrl: "http://localhost:3000/burn",
@@ -136,6 +145,9 @@ describe("Given User doesn't own a token", () => {
               "Content-Type": "application/x-www-form-urlencoded",
               "X-BLOCKCHAIN": "ETHEREUM",
               "X-API-KEY": "testKey"
+            },
+            isValidHash: (hash) => {
+              return /^0x([A-Fa-f0-9]{64})$/.test(hash);
             }
           }
         ];
@@ -143,16 +155,7 @@ describe("Given User doesn't own a token", () => {
         it.each(burnTests)("Verify if the operation hash is valid", async (burnTests) => {
           const burnResponse = await axios.post(burnTests.burnUrl, burnTests.data, { headers: burnTests.headers });
 
-          //f (!burnTests[0]) {
-          //console.log(burnTests[0]);
-          //expect(validateOperation(burnResponse.data.tx_hash)).toBe(ValidationResult.VALID);
-          ///}
-          ////if (!burnTests[1]) {
-          ////expect(burnResponse.data.tx_hash).toMatch(/^0x([A-Fa-f0-9]{64})$/);
-          //}
-
-          expect(burnResponse.data.tx_hash).toBeDefined();
-          //expect(burnResponse.data.tx_hash).toMatch(/^0x([A-Fa-f0-9]{64})$/);
+          expect(burnTests.isValidHash(burnResponse.data.tx_hash)).toBe(true)
         });
       });
     });
