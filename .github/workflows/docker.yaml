@@ -3,7 +3,7 @@ name: Run Jest tests
 on:
   push:
     branches:
-      - main #est-ce qu'il faut pousser sur main ou bien sur les branches créee ?
+      - tests
 
 jobs:
   build-and-deploy:
@@ -17,7 +17,7 @@ jobs:
       run: docker-compose up -d
 
     - name: Wait for Docker services to start
-      run: sleep 15 # attendre que le docker se lance
+      run: sleep 15 # attendre que le docker se lance, faut-il set up plus de temps ?
 
     - name: Deploy Smart Contracts
       run: |
