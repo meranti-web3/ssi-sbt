@@ -22,6 +22,7 @@ jobs:
     - name: Deploy Smart Contracts
       run: |
         "./deploy.sh"
+      shell: bash
 
     - name: Start npm application
       run: |
