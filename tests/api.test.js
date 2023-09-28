@@ -1,5 +1,5 @@
 const axios = require("axios");
-const { validateOperation, ValidationResult } = require("@taquito/utils");
+const { validateOperation } = require("@taquito/utils");
 const qs = require("qs");
 
 const SERVICE_URL = "http://localhost:3000";
@@ -53,7 +53,7 @@ const tests = [
       address_for: "0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199"
     }),
     isValidHash: (hash) => {
-      return /^0x([A-Fa-f0-9]{64})$/.test(hash); //fct test verifie que la string que j'ai rentrer match l'expression que j'ai defini = ca retourne un boolen
+      return /^0x([A-Fa-f0-9]{64})$/.test(hash);
     }
   }
 ];
@@ -72,9 +72,6 @@ describe.each(tests)("Given service is running", ({ alicePublicKey, blockchainNa
 
   describe("When a new token is minted for User", () => {
     it("Verify if the operation hash is valid", async () => {
-      //const isValidHash_tez = (hash) => { //peut-on introduire ces deux fonctions dans la suite name
-      //return !!validateOperation(hash);
-      //};
 
       const mintResponse = await axios.post(`${SERVICE_URL}/mint`, data, {
         headers: {
