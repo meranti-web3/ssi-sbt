@@ -49,7 +49,6 @@ async function deploy() {
 
   console.warn(`soulboundTokens deployed at ${contract.address}`);
   console.log(contract.address);
-  //console.log(`SoulboundToken Contract deployed at ${contract.address}`);
 }
 
 

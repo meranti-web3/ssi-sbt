@@ -72,7 +72,6 @@ describe.each(tests)("Given service is running", ({ alicePublicKey, blockchainNa
 
   describe("When a new token is minted for User", () => {
     it("Verify if the operation hash is valid", async () => {
-
       const mintResponse = await axios.post(`${SERVICE_URL}/mint`, data, {
         headers: {
           "X-BLOCKCHAIN": blockchainName,
@@ -94,7 +93,7 @@ describe.each(tests)("Given service is running", ({ alicePublicKey, blockchainNa
           return hasResponse.data.has_token;
         })
       );
-      it("Verify if the new user own the new token", async () => {
+      it("Verify if the new user owns the new token", async () => {
         const hasResponse = await axios.get(`${SERVICE_URL}/has/${alicePublicKey}`, {
           headers: {
             "X-BLOCKCHAIN": blockchainName,
@@ -114,6 +113,28 @@ describe.each(tests)("Given service is running", ({ alicePublicKey, blockchainNa
             }
           });
           expect(isValidHash(burnResponse.data.tx_hash)).toBe(true);
+        });
+        describe("Then the token is burned", () => {
+          beforeAll(() =>
+            waitFor(async function testFn() {
+              const hasResponse = await axios.get(`${SERVICE_URL}/has/${alicePublicKey}`, {
+                headers: {
+                  "X-BLOCKCHAIN": blockchainName,
+                  "X-API-KEY": API_KEY
+                }
+              });
+              return hasResponse.data.has_token;
+            })
+          );
+          it("Verify that the user doesn't own the token", async () => {
+            const hasResponse = await axios.get(`${SERVICE_URL}/has/${alicePublicKey}`, {
+              headers: {
+                "X-BLOCKCHAIN": blockchainName,
+                "X-API-KEY": API_KEY
+              }
+            });
+            expect(hasResponse.data.has_token).toBe(false);
+          });
         });
       });
     });
